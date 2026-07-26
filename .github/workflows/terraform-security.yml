@@ -1,0 +1,109 @@
+name: Terraform Security Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "terraform/**"
+      - ".tflint.hcl"
+      - ".github/workflows/terraform-security.yml"
+
+  push:
+    branches:
+      - main
+    paths:
+      - "terraform/**"
+      - ".tflint.hcl"
+      - ".github/workflows/terraform-security.yml"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terraform-security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+  TERRAFORM_DIR: terraform/environments/dev
+
+jobs:
+  terraform-quality:
+    name: Terraform Format and Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: 1.15.8
+          terraform_wrapper: false
+
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive terraform
+
+      - name: Initialize Terraform without backend
+        run: terraform -chdir="$TERRAFORM_DIR" init -backend=false -input=false
+
+      - name: Validate Terraform configuration
+        run: terraform -chdir="$TERRAFORM_DIR" validate -no-color
+
+  tflint:
+    name: TFLint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up TFLint
+        uses: terraform-linters/setup-tflint@v6
+        with:
+          tflint_version: v0.64.0
+
+      - name: Display TFLint version
+        run: tflint --version
+
+      - name: Initialize TFLint plugins
+        run: >
+          tflint
+          --chdir="$TERRAFORM_DIR"
+          --init
+          --config="$GITHUB_WORKSPACE/.tflint.hcl"
+
+      - name: Run TFLint
+        run: >
+          tflint
+          --chdir="$TERRAFORM_DIR"
+          --config="$GITHUB_WORKSPACE/.tflint.hcl"
+          --format=compact
+
+  checkov:
+    name: Checkov IaC Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Scan Terraform with Checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: terraform/environments/dev
+          framework: terraform
+          quiet: true
+          soft_fail: true
+          output_format: cli
