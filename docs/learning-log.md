@@ -24,3 +24,38 @@ Credentials, Terraform state files, private keys, and environment files must not
 ### Next Phase
 
 Prepare the Git repository workflow and secure the AWS account before deploying infrastructure.
+
+## 2026-07-26 — First Terraform AWS Deployment
+
+### Completed
+
+- Created the `feat/terraform-s3-foundation` feature branch.
+- Configured the AWS and Random Terraform providers.
+- Added validated environment and AWS region variables.
+- Generated a globally unique S3 bucket name.
+- Enabled all S3 public-access-block controls.
+- Disabled ACL-based object ownership.
+- Enabled object versioning.
+- Enabled S3-managed server-side encryption.
+- Reviewed and applied a saved Terraform execution plan.
+- Verified the deployed controls through the AWS CLI.
+- Confirmed Terraform idempotency with a no-change plan.
+
+### Terraform Concepts Learned
+
+- Providers connect Terraform to external platforms.
+- Resources represent infrastructure objects.
+- Variables accept reusable input values.
+- Locals create reusable expressions inside a configuration.
+- Outputs expose selected deployment information.
+- State maps Terraform resource addresses to real infrastructure.
+- Saved plans allow reviewed changes to be applied exactly.
+- Idempotency means repeated execution produces no unnecessary changes.
+
+### Security Lesson
+
+Writing a secure infrastructure definition is only one part of validation. Security controls should also be verified against the live cloud environment after deployment.
+
+### Next Phase
+
+Add automated Terraform formatting, validation, linting, and security scanning through CI/CD.
