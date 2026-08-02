@@ -1,4 +1,9 @@
+
+```text
+aws:kmsThe bucket explicitly uses S3-managed server-side encryptionThe bucket explicitly uses S3-managed server-side encryption
+
 # Phase 1: Secure S3 Foundation
+
 
 ## Objective
 
@@ -44,13 +49,13 @@ Versioning is not a complete backup strategy, but it provides an additional reco
 
 ### Encryption
 
-The bucket explicitly uses S3-managed server-side encryption:
+The bucket uses server-side encryption with a customer-managed AWS KMS key:
 
 ```text
-AES256
+aws:kms
 ```
 
-A later phase will compare S3-managed encryption with AWS KMS, including key policies, auditability, access control, rotation, and cost.
+Automatic KMS key rotation is enabled, and an S3 Bucket Key reduces repeated KMS requests for bucket operations.
 
 ### Resource Identification
 
@@ -133,3 +138,24 @@ force_destroy = true
 This is appropriate for a temporary learning environment because Terraform can delete the bucket even when it contains test objects or previous object versions.
 
 A production data bucket would normally use stronger deletion protection and a documented retention strategy.
+
+## Lifecycle Management
+
+The S3 lifecycle policy:
+
+- Aborts incomplete multipart uploads after 7 days
+- Deletes noncurrent object versions after 30 days
+
+This limits unnecessary storage accumulation while retaining a defined recovery window.
+
+## Checkov Finding Decisions
+
+The initial Checkov scan reported five findings:
+
+- `CKV_AWS_145`: Remediated with customer-managed KMS encryption
+- `CKV2_AWS_61`: Remediated with an S3 lifecycle configuration
+- `CKV_AWS_18`: Deferred until the centralized logging phase
+- `CKV2_AWS_62`: Deferred until the event-driven remediation phase
+- `CKV_AWS_144`: Accepted for the temporary single-region development lab
+
+Deferred controls use resource-scoped Checkov suppressions with documented engineering justification.

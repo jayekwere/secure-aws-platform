@@ -7,6 +7,10 @@ locals {
 }
 
 resource "aws_s3_bucket" "secure_data" {
+  #checkov:skip=CKV_AWS_18:Access logging will use a dedicated log bucket during the centralized logging phase.
+  #checkov:skip=CKV2_AWS_62:EventBridge notifications will be implemented during the event-driven remediation phase.
+  #checkov:skip=CKV_AWS_144:Cross-region replication is not required for this temporary single-region development lab.
+
   bucket        = local.bucket_name
   force_destroy = true
 
@@ -46,8 +50,11 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "secure_data" {
   bucket = aws_s3_bucket.secure_data.id
 
   rule {
+    bucket_key_enabled = true
+
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      kms_master_key_id = aws_kms_key.secure_data.arn
+      sse_algorithm     = "aws:kms"
     }
   }
 }
