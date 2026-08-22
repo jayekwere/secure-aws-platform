@@ -1,7 +1,3 @@
-
-```text
-aws:kmsThe bucket explicitly uses S3-managed server-side encryptionThe bucket explicitly uses S3-managed server-side encryption
-
 # Phase 1: Secure S3 Foundation
 
 
@@ -150,12 +146,13 @@ This limits unnecessary storage accumulation while retaining a defined recovery 
 
 ## Checkov Finding Decisions
 
-The initial Checkov scan reported five findings:
+The Checkov scans identified six findings:
 
 - `CKV_AWS_145`: Remediated with customer-managed KMS encryption
 - `CKV2_AWS_61`: Remediated with an S3 lifecycle configuration
 - `CKV_AWS_18`: Deferred until the centralized logging phase
 - `CKV2_AWS_62`: Deferred until the event-driven remediation phase
 - `CKV_AWS_144`: Accepted for the temporary single-region development lab
+- `CKV2_AWS_64`: Deferred until the IAM security layer, where an explicit least-privilege KMS key policy will be implemented
 
 Deferred controls use resource-scoped Checkov suppressions with documented engineering justification.
