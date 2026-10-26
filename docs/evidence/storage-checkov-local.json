@@ -1,0 +1,30 @@
+{
+  "scanner": "Checkov 3.3.30",
+  "image": "ghcr.io/bridgecrewio/checkov@sha256:4b65e89f1fde292249fc0aa0d0db43302c036dfe39f7370b2d3517571082b894",
+  "verified_at_utc": "2026-10-26T13:13:40.502505+00:00",
+  "output_mode": "quiet; passed and skipped details omitted by scanner",
+  "source_sha256": {
+    "terraform/environments/dev/bucket-policy.tf": "717ae550783e1ce05bfe0cd05cba91a569b01dad87e543b79d483d46b8653f84",
+    "terraform/environments/dev/kms.tf": "22ab1de47ef25e7859533cfb2544eb445d49de33ea9615ea4ba101bd1b54f991",
+    "terraform/environments/dev/lifecycle.tf": "70b14b5a26f4c49b2ff231d174b5b2bc6bcbd270aeba33a70c2b8daf7c05d390",
+    "terraform/environments/dev/main.tf": "d709910414962800356bdf10b29058aa9245888f27f0859716e299385e7d06a3",
+    "terraform/environments/dev/outputs.tf": "d491a24abfb8a20b26cee42045c6d657863810c7b1b69773fbe610ce5cbb3811",
+    "terraform/environments/dev/providers.tf": "ca33c977635b20bdf722dcd7d1a1712debde2ccb826ebf713c058066bc4929f0",
+    "terraform/environments/dev/variables.tf": "bfdf7a9f3a7e11fa28aa93e83be84808d742ab0c41c96eccabd9c5a4371490b3",
+    "terraform/environments/dev/versions.tf": "9277f5115ea44acccac20d31373ae30049913127957860056cbd26a778595768"
+  },
+  "reports": [
+    {
+      "check_type": "terraform",
+      "summary": {
+        "passed": 19,
+        "failed": 0,
+        "skipped": 4,
+        "parsing_errors": 0,
+        "resource_count": 10,
+        "checkov_version": "3.3.30"
+      },
+      "failed": []
+    }
+  ]
+}

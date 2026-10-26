@@ -108,3 +108,43 @@ Default encryption, static validation, and a historical no-change plan answer di
 ### Next Milestone
 
 Implement and test the S3/KMS access boundary, then add protected state and one observable detection and restoration scenario. No Terraform, workflow, or GitHub settings were changed by this documentation update.
+
+## 2026-10-25 — Local Storage Policy Milestone
+
+### Implemented Locally, Pending Deployment
+
+- Added a deny-only bucket policy for non-service HTTP requests and uploads missing explicit SSE-KMS/project-key headers.
+- Required an expected AWS account ID, restricted the root module to development, and made destructive cleanup an explicit opt-in.
+- Added four mocked Terraform plan tests and seven deliberate source mutations; all passed their expected outcomes locally.
+- Configured the workflow to run the regression checks; it has not run in hosted CI.
+- Recorded source hashes and sanitized local results in the [verification evidence](evidence/storage-policy-tests-local.json).
+
+### Read-Only Console Inspection
+
+The existing `CloudAdministratorRole` allowed inspection of the original Ohio development bucket after the signed-in IAM user's bucket listing was denied. Public access blocking, ownership, versioning, SSE-KMS, the Bucket Key, and selected lifecycle/notification settings were observed. See the [exact scope and limitations](storage-policy-contract.md#read-only-console-observations).
+
+No AWS resources were changed. The original Terraform state is absent from this checkout, so the new local configuration was not applied.
+
+### Next Step
+
+Recover and reconcile the original state or prepare a reviewed import plan, then inspect a scoped update plan before deploying the policy and testing real allowed/denied requests.
+
+## 2026-10-26 — Applied Storage Guardrails and Live Verification
+
+### Completed
+
+- Recovered the original serial-12 state and matched its bucket/key identifiers against AWS using the existing role.
+- Applied the reviewed plan to the existing resources: one policy added, one bucket-management setting changed, no replacements or deletions.
+- Made the recovered state in this checkout authoritative at serial 15. The original checkout's state remains an unchanged pre-apply archive.
+- Passed 20 verification checks, including correct-key and multipart uploads, encrypted download, anonymous-read denial, missing-header/SSE-S3/different-existing-key denials, and real wrong-account rejection.
+- Removed all four synthetic object versions created across the verification probes.
+- Confirmed a final Terraform plan with no changes.
+- Rechecked the local mocked tests, seven deliberate regressions, TFLint, and Checkov. Hosted CI remains unrun because nothing was pushed.
+
+### Observed AWS Behavior
+
+A nonexistent-key probe returned `KMS.NotFoundException` before policy authorization, so it was not counted as proof of policy denial. A valid alias resolving to the approved key succeeded; the documentation and assertion wording now reflect resolved-key enforcement rather than literal ARN-only client syntax. A different existing key was explicitly denied.
+
+### Remaining Scope
+
+This completes the reviewed storage-policy milestone. Explicit workload IAM and KMS key policies, centralized logging/detection, and remote state with recovery remain separate work. The current role is an administrator; these checks do not establish workload least privilege or account-wide security coverage.

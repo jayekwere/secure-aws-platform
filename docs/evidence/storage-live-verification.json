@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "verified_at_utc": "2026-10-26T13:04:38.240585+00:00",
+  "verified_at_local": "2026-10-26T06:04:38.241778-07:00",
+  "region": "us-east-2",
+  "scope": "Existing S3/KMS development bucket; synthetic objects only",
+  "checks": [
+    {
+      "name": "Expected AWS account",
+      "passed": true
+    },
+    {
+      "name": "All four public access blocks enabled",
+      "passed": true
+    },
+    {
+      "name": "ACLs disabled",
+      "passed": true
+    },
+    {
+      "name": "Versioning enabled",
+      "passed": true
+    },
+    {
+      "name": "Default encryption uses existing project KMS key and Bucket Key",
+      "passed": true
+    },
+    {
+      "name": "Original customer-managed KMS key enabled",
+      "passed": true
+    },
+    {
+      "name": "Automatic KMS rotation enabled",
+      "passed": true
+    },
+    {
+      "name": "Lifecycle retains 7-day upload cleanup and 30-day old-version expiry",
+      "passed": true
+    },
+    {
+      "name": "Applied deny-only policy matches approved plan",
+      "passed": true
+    },
+    {
+      "name": "Automatic bucket content deletion disabled in state",
+      "passed": true
+    },
+    {
+      "name": "Explicit project-key upload succeeds and reports SSE-KMS",
+      "passed": true
+    },
+    {
+      "name": "Authorized encrypted download returns original synthetic data",
+      "passed": true
+    },
+    {
+      "name": "Anonymous object read denied",
+      "passed": true
+    },
+    {
+      "name": "Missing encryption headers explicitly denied by resource policy",
+      "passed": true
+    },
+    {
+      "name": "SSE-S3 request explicitly denied by resource policy",
+      "passed": true
+    },
+    {
+      "name": "KMS request without key header explicitly denied by resource policy",
+      "passed": true
+    },
+    {
+      "name": "Alias resolving to the approved key succeeds and reports the approved ARN",
+      "passed": true
+    },
+    {
+      "name": "Different existing KMS key explicitly denied by resource policy",
+      "passed": true
+    },
+    {
+      "name": "Multipart upload succeeds with the required project-key headers",
+      "passed": true
+    },
+    {
+      "name": "Real provider rejects a mismatched expected account",
+      "passed": true
+    }
+  ],
+  "source_sha256": {
+    "terraform/environments/dev/bucket-policy.tf": "717ae550783e1ce05bfe0cd05cba91a569b01dad87e543b79d483d46b8653f84",
+    "terraform/environments/dev/kms.tf": "22ab1de47ef25e7859533cfb2544eb445d49de33ea9615ea4ba101bd1b54f991",
+    "terraform/environments/dev/lifecycle.tf": "70b14b5a26f4c49b2ff231d174b5b2bc6bcbd270aeba33a70c2b8daf7c05d390",
+    "terraform/environments/dev/main.tf": "d709910414962800356bdf10b29058aa9245888f27f0859716e299385e7d06a3",
+    "terraform/environments/dev/outputs.tf": "d491a24abfb8a20b26cee42045c6d657863810c7b1b69773fbe610ce5cbb3811",
+    "terraform/environments/dev/providers.tf": "ca33c977635b20bdf722dcd7d1a1712debde2ccb826ebf713c058066bc4929f0",
+    "terraform/environments/dev/variables.tf": "bfdf7a9f3a7e11fa28aa93e83be84808d742ab0c41c96eccabd9c5a4371490b3",
+    "terraform/environments/dev/versions.tf": "9277f5115ea44acccac20d31373ae30049913127957860056cbd26a778595768"
+  },
+  "remaining_gaps": [
+    "Explicit workload IAM and KMS key policies",
+    "Centralized logging and detection",
+    "Remote state with locking and recovery"
+  ],
+  "cleanup": {
+    "synthetic_object_versions_removed": 4,
+    "errors": [],
+    "scope": "Only exact version IDs created by this verification run"
+  },
+  "all_passed": true,
+  "inconclusive_probes": [
+    {
+      "name": "Nonexistent alternative KMS key",
+      "error_code": "KMS.NotFoundException",
+      "interpretation": "AWS validated key existence before policy authorization. This is not proof of policy denial."
+    }
+  ],
+  "completed": true,
+  "observed_alias_behavior": "An existing key alias is accepted when S3 resolves it to the approved key ARN. Literal ARN-only client syntax is not enforced.",
+  "different_existing_key_test": {
+    "performed": true,
+    "passed": true
+  },
+  "post_apply_plan": {
+    "exit_code": 0,
+    "no_changes": true
+  },
+  "completed_at_local": "2026-10-26T06:11:06.232610-07:00",
+  "deployment": {
+    "resource_additions": 1,
+    "resource_changes": 1,
+    "resource_destroys": 0,
+    "replacements": 0,
+    "original_bucket_reused": true,
+    "original_kms_key_reused": true
+  },
+  "state_management": {
+    "active_state": "terraform/environments/dev/terraform.tfstate",
+    "serial": 15,
+    "original_state_preserved": true,
+    "state_and_plans_ignored_by_git": true,
+    "state_file_mode": "0o600"
+  }
+}

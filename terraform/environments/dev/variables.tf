@@ -23,7 +23,25 @@ variable "environment" {
   default     = "dev"
 
   validation {
-    condition     = contains(["dev", "test", "prod"], var.environment)
-    error_message = "Environment must be dev, test, or prod."
+    condition     = var.environment == "dev"
+    error_message = "This root module supports only the dev environment."
   }
+}
+
+variable "expected_account_id" {
+  description = "AWS account authorized for this lab. The provider rejects other accounts."
+  type        = string
+  nullable    = false
+
+  validation {
+    condition     = can(regex("^[0-9]{12}$", var.expected_account_id))
+    error_message = "Expected AWS account ID must contain exactly 12 digits."
+  }
+}
+
+variable "allow_force_destroy" {
+  description = "Explicitly allow deletion of all bucket contents during lab teardown."
+  type        = bool
+  default     = false
+  nullable    = false
 }

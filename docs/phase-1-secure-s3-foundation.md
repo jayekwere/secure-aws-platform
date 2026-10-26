@@ -1,26 +1,26 @@
-# Phase 1: S3/KMS Foundation
+# Phase 1: S3/KMS Foundation (Historical Baseline)
 
 ## Scope and evidence
 
-This phase defines a single-region S3 development lab with customer-managed KMS default encryption and automated static validation. The current Terraform root module is [terraform/environments/dev](../terraform/environments/dev).
+This page records the implementation at commit `f34d2dc`: a single-region S3 development lab with customer-managed KMS default encryption and automated static validation. Source links below refer to that baseline. Subsequent local policy, safeguard, and test changes are described in the [storage policy milestone](storage-policy-contract.md).
 
-The [learning log](learning-log.md) records manual deployments and verification in July and August 2026. Those are historical reports: raw AWS CLI results and saved deployment plans are not committed. The October 25, 2026 review inspected source and CI and ran static Terraform checks; it did not inspect the AWS account. Current deployment and drift status remain unverified.
+The [learning log](learning-log.md) records manual deployments and verification in July and August 2026. Those are historical reports: raw AWS CLI results and saved deployment plans are not committed. The initial October 25 review inspected source, CI, and static Terraform checks. A later read-only console inspection found the original bucket; its limited observations are recorded in the [milestone notes](storage-policy-contract.md#read-only-console-observations). Full drift and authorization verification remain outstanding.
 
 ## Resources managed
 
-All nine resource blocks are in one root module; no reusable child modules exist yet.
+The baseline's nine resource blocks are in one root module; it has no reusable child modules.
 
 | Resource | Purpose | Source |
 | --- | --- | --- |
-| `random_id.bucket_suffix` | Random suffix to reduce bucket-name collisions | [main.tf](../terraform/environments/dev/main.tf) |
-| `aws_s3_bucket.secure_data` | Development data bucket | [main.tf](../terraform/environments/dev/main.tf) |
-| `aws_s3_bucket_public_access_block.secure_data` | Four bucket public-access-block settings | [main.tf](../terraform/environments/dev/main.tf) |
-| `aws_s3_bucket_ownership_controls.secure_data` | Bucket-owner-enforced ownership | [main.tf](../terraform/environments/dev/main.tf) |
-| `aws_s3_bucket_versioning.secure_data` | Object versioning | [main.tf](../terraform/environments/dev/main.tf) |
-| `aws_s3_bucket_server_side_encryption_configuration.secure_data` | Default SSE-KMS encryption and S3 Bucket Key | [main.tf](../terraform/environments/dev/main.tf) |
-| `aws_kms_key.secure_data` | Customer-managed encryption key | [kms.tf](../terraform/environments/dev/kms.tf) |
-| `aws_kms_alias.secure_data` | Environment-named key alias | [kms.tf](../terraform/environments/dev/kms.tf) |
-| `aws_s3_bucket_lifecycle_configuration.secure_data` | Multipart-upload cleanup and noncurrent-version expiration | [lifecycle.tf](../terraform/environments/dev/lifecycle.tf) |
+| `random_id.bucket_suffix` | Random suffix to reduce bucket-name collisions | [main.tf](https://github.com/jayekwere/secure-aws-platform/blob/f34d2dc1ca354be9c1cc766cf2fb586360ef806e/terraform/environments/dev/main.tf) |
+| `aws_s3_bucket.secure_data` | Development data bucket | [main.tf](https://github.com/jayekwere/secure-aws-platform/blob/f34d2dc1ca354be9c1cc766cf2fb586360ef806e/terraform/environments/dev/main.tf) |
+| `aws_s3_bucket_public_access_block.secure_data` | Four bucket public-access-block settings | [main.tf](https://github.com/jayekwere/secure-aws-platform/blob/f34d2dc1ca354be9c1cc766cf2fb586360ef806e/terraform/environments/dev/main.tf) |
+| `aws_s3_bucket_ownership_controls.secure_data` | Bucket-owner-enforced ownership | [main.tf](https://github.com/jayekwere/secure-aws-platform/blob/f34d2dc1ca354be9c1cc766cf2fb586360ef806e/terraform/environments/dev/main.tf) |
+| `aws_s3_bucket_versioning.secure_data` | Object versioning | [main.tf](https://github.com/jayekwere/secure-aws-platform/blob/f34d2dc1ca354be9c1cc766cf2fb586360ef806e/terraform/environments/dev/main.tf) |
+| `aws_s3_bucket_server_side_encryption_configuration.secure_data` | Default SSE-KMS encryption and S3 Bucket Key | [main.tf](https://github.com/jayekwere/secure-aws-platform/blob/f34d2dc1ca354be9c1cc766cf2fb586360ef806e/terraform/environments/dev/main.tf) |
+| `aws_kms_key.secure_data` | Customer-managed encryption key | [kms.tf](https://github.com/jayekwere/secure-aws-platform/blob/f34d2dc1ca354be9c1cc766cf2fb586360ef806e/terraform/environments/dev/kms.tf) |
+| `aws_kms_alias.secure_data` | Environment-named key alias | [kms.tf](https://github.com/jayekwere/secure-aws-platform/blob/f34d2dc1ca354be9c1cc766cf2fb586360ef806e/terraform/environments/dev/kms.tf) |
+| `aws_s3_bucket_lifecycle_configuration.secure_data` | Multipart-upload cleanup and noncurrent-version expiration | [lifecycle.tf](https://github.com/jayekwere/secure-aws-platform/blob/f34d2dc1ca354be9c1cc766cf2fb586360ef806e/terraform/environments/dev/lifecycle.tf) |
 
 ## Controls defined in code
 
@@ -127,7 +127,7 @@ A separately bootstrapped remote backend with encryption, scoped access, version
 
 ## Checkov finding decisions
 
-The project history documents these six decisions. Four resource-scoped suppressions remain in the current source.
+The project history documents these six decisions. Four resource-scoped suppressions were present in this baseline and remain unresolved by the local policy milestone.
 
 | Check | Decision | Current implementation or gap |
 | --- | --- | --- |
@@ -142,4 +142,4 @@ The suppressions include phase-based reasons, but do not carry owners, expiry da
 
 ## Next milestone
 
-Define and test the S3/KMS access boundary, add reproducible negative-test evidence, and establish protected state before expanding deployment automation. Follow with one observable detection and restoration scenario. See the [prioritized roadmap](../README.md#prioritized-planned-work) for completion criteria.
+The subsequent [deployed milestone](storage-policy-contract.md) adds a request policy, input safeguards, and mocked regression tests. The original state was recovered and reconciled, the reviewed plan applied, and synthetic live requests verified. Workload IAM/key-policy boundaries, remote state, and logging/detection remain on the [current roadmap](../README.md#prioritized-planned-work).

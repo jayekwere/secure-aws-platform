@@ -14,6 +14,8 @@ Terraform S3/KMS security lab with public access blocking, versioning, lifecycle
 
 Secure AWS Platform currently implements a single-region S3/KMS development foundation in Terraform. It defines public access blocking, bucket-owner-enforced ownership, versioning, default customer-managed KMS encryption with rotation, and storage lifecycle rules. GitHub Actions checks formatting, validates the configuration, runs TFLint, and blocks unsuppressed Checkov findings. The next milestone is to define and test the access boundary, followed by protected state and one observable detection and restoration scenario.
 
+The [deployed storage milestone](storage-policy-contract.md) adds a deny-only request policy, account/development safeguards, and regression tests. Four mocked plan tests and seven deliberate regressions pass locally. The reviewed plan was applied to the existing bucket, 20 verification checks passed, and the final plan showed no changes. Hosted CI has not run the local changes.
+
 ## Five-minute walkthrough
 
 1. **Start with scope.** Open the [README](../README.md). Identify the implemented S3/KMS configuration and the separate planned-work table.
@@ -24,7 +26,7 @@ Secure AWS Platform currently implements a single-region S3/KMS development foun
 
 ## Boundaries to state alongside the demonstration
 
-- Deployment and AWS CLI verification are recorded historically. The October 25, 2026 source review did not recheck the live AWS account.
-- There are no managed IAM roles, explicit bucket/key policies, remote state backend, private network, CloudTrail/EventBridge detection, OIDC deployment workflow, or application workloads yet.
+- Historical deployment notes and the later read-only console inspection have different evidence limits. The console inspection found the original bucket and checked selected settings; it did not prove authorization or full state reconciliation.
+- The bucket policy is applied and verified with synthetic uploads, downloads, denials, and multipart requests. Managed workload roles, an explicit KMS key policy, remote state, private networking, detection, OIDC deployment, and application workloads remain future work.
 - Containers, EKS, Kubernetes policies, and admission control are longer-term possibilities. They are not current project capabilities.
-- The development configuration allows destructive teardown and does not become production-ready when its environment label changes.
+- The local development configuration now rejects production labels and requires explicit opt-in for destructive bucket cleanup. It remains a disposable lab.

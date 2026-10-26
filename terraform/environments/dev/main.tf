@@ -12,7 +12,7 @@ resource "aws_s3_bucket" "secure_data" {
   #checkov:skip=CKV_AWS_144:Cross-region replication is not required for this temporary single-region development lab.
 
   bucket        = local.bucket_name
-  force_destroy = true
+  force_destroy = var.allow_force_destroy
 
   tags = {
     Name               = local.bucket_name

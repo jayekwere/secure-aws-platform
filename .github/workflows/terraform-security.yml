@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "terraform/**"
+      - "scripts/check_storage_regressions.py"
       - ".tflint.hcl"
       - ".github/workflows/terraform-security.yml"
 
@@ -14,6 +15,7 @@ on:
       - main
     paths:
       - "terraform/**"
+      - "scripts/check_storage_regressions.py"
       - ".tflint.hcl"
       - ".github/workflows/terraform-security.yml"
 
@@ -33,7 +35,7 @@ env:
 
 jobs:
   terraform-quality:
-    name: Terraform Format and Validation
+    name: Terraform Format, Validation and Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -52,10 +54,13 @@ jobs:
         run: terraform fmt -check -recursive terraform
 
       - name: Initialize Terraform without backend
-        run: terraform -chdir="$TERRAFORM_DIR" init -backend=false -input=false
+        run: terraform -chdir="$TERRAFORM_DIR" init -backend=false -input=false -lockfile=readonly
 
       - name: Validate Terraform configuration
         run: terraform -chdir="$TERRAFORM_DIR" validate -no-color
+
+      - name: Test storage controls and reject deliberate regressions
+        run: python3 scripts/check_storage_regressions.py
 
   tflint:
     name: TFLint

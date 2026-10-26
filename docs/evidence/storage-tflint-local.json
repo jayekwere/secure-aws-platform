@@ -1,0 +1,22 @@
+{
+  "tool": "TFLint",
+  "version": "0.64.0",
+  "image": "ghcr.io/terraform-linters/tflint@sha256:1c595f42d794c32c45a6ea8b58655fd66433d4ca3b1bc631c574a48d120bd19f",
+  "verified_at_utc": "2026-10-26T13:13:35.972887+00:00",
+  "exit_code": 0,
+  "result": {
+    "issues": [],
+    "errors": []
+  },
+  "source_sha256": {
+    ".tflint.hcl": "47c7d922abb5f4d1704e291c92964491dc74dae658b9278245a5341aad954b8a",
+    "terraform/environments/dev/bucket-policy.tf": "717ae550783e1ce05bfe0cd05cba91a569b01dad87e543b79d483d46b8653f84",
+    "terraform/environments/dev/kms.tf": "22ab1de47ef25e7859533cfb2544eb445d49de33ea9615ea4ba101bd1b54f991",
+    "terraform/environments/dev/lifecycle.tf": "70b14b5a26f4c49b2ff231d174b5b2bc6bcbd270aeba33a70c2b8daf7c05d390",
+    "terraform/environments/dev/main.tf": "d709910414962800356bdf10b29058aa9245888f27f0859716e299385e7d06a3",
+    "terraform/environments/dev/outputs.tf": "d491a24abfb8a20b26cee42045c6d657863810c7b1b69773fbe610ce5cbb3811",
+    "terraform/environments/dev/providers.tf": "ca33c977635b20bdf722dcd7d1a1712debde2ccb826ebf713c058066bc4929f0",
+    "terraform/environments/dev/variables.tf": "bfdf7a9f3a7e11fa28aa93e83be84808d742ab0c41c96eccabd9c5a4371490b3",
+    "terraform/environments/dev/versions.tf": "9277f5115ea44acccac20d31373ae30049913127957860056cbd26a778595768"
+  }
+}
