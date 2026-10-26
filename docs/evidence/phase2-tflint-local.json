@@ -1,0 +1,36 @@
+{
+  "verified_at_utc": "2026-10-26T14:48:38.021801+00:00",
+  "method": "TFLint 0.64.0, Terraform recommended rules only, read-only sources, cached container, no network",
+  "image": "ghcr.io/terraform-linters/tflint@sha256:1c595f42d794c32c45a6ea8b58655fd66433d4ca3b1bc631c574a48d120bd19f",
+  "source_sha256": {
+    "terraform/bootstrap/backend.tf": "91d430c0ddeea7ee11ffa6dbcbbcad5f52fd700c98527ac06108746514affcb7",
+    "terraform/bootstrap/main.tf": "faf80e6236ccb0db52c2e253e865a0a1cf4013a540628757c53a674fb4ba043f",
+    "terraform/bootstrap/outputs.tf": "2dbe9d6e4378d7d30494829f97fd4b88cc6365b3346d5f53792900c796c28d44",
+    "terraform/bootstrap/variables.tf": "e9d649521aa75683aef8557fe513ded304f96a88b7dba7b4a3e143675e069969",
+    "terraform/bootstrap/versions.tf": "0ffd07c513ba4e2f385eaa2d0278fd6ed3056547f7ead6eb41cb4a9fedbb909f",
+    "terraform/environments/dev/backend.tf": "91d430c0ddeea7ee11ffa6dbcbbcad5f52fd700c98527ac06108746514affcb7",
+    "terraform/environments/dev/bucket-policy.tf": "717ae550783e1ce05bfe0cd05cba91a569b01dad87e543b79d483d46b8653f84",
+    "terraform/environments/dev/detection.tf": "0f3d0685ce0824bfb0bdfbf9c5152934b551a478ea142bac11cd75e4c6900ee7",
+    "terraform/environments/dev/iam.tf": "b35d3e0c2e3885c6530d0551447f131b19c6651d34023a3bf523e54b7aa22ba0",
+    "terraform/environments/dev/kms.tf": "33c952dd4da1f349321700de5867de3c8ed7f2839558200c6fe51b651d25d720",
+    "terraform/environments/dev/lifecycle.tf": "70b14b5a26f4c49b2ff231d174b5b2bc6bcbd270aeba33a70c2b8daf7c05d390",
+    "terraform/environments/dev/logging.tf": "1cf938a5e1da36455301df810b56152a91294812ed45de0eabd4b44f2c89f466",
+    "terraform/environments/dev/main.tf": "3f655ab9645ca0c643aceecadfc361661870bc352e2ef849b490380d1c0639e9",
+    "terraform/environments/dev/outputs.tf": "1b3d3b50d67d8889851fc8b50376e2723439480847b0959556a6b653d5ed249c",
+    "terraform/environments/dev/providers.tf": "ca33c977635b20bdf722dcd7d1a1712debde2ccb826ebf713c058066bc4929f0",
+    "terraform/environments/dev/security-locals.tf": "b1537df1714e53578e6ce28503bbc2c7124c1bd707429f9d3989893959c4a49f",
+    "terraform/environments/dev/variables.tf": "296929a60398419818ab9b12e898990daecd39f2013f6c10bc65f675cad965da",
+    "terraform/environments/dev/versions.tf": "9277f5115ea44acccac20d31373ae30049913127957860056cbd26a778595768",
+    ".tflint.hcl": "47c7d922abb5f4d1704e291c92964491dc74dae658b9278245a5341aad954b8a"
+  },
+  "roots": {
+    "dev": {
+      "issues": [],
+      "errors": []
+    },
+    "bootstrap": {
+      "issues": [],
+      "errors": []
+    }
+  }
+}

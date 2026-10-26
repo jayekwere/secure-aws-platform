@@ -37,6 +37,9 @@ jobs:
   terraform-quality:
     name: Terraform Format, Validation and Tests
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        root: [dev, bootstrap]
 
     steps:
       - name: Check out repository
@@ -54,17 +57,26 @@ jobs:
         run: terraform fmt -check -recursive terraform
 
       - name: Initialize Terraform without backend
-        run: terraform -chdir="$TERRAFORM_DIR" init -backend=false -input=false -lockfile=readonly
+        run: |
+          directory="terraform/environments/dev"
+          if [ "${{ matrix.root }}" = "bootstrap" ]; then directory="terraform/bootstrap"; fi
+          terraform -chdir="$directory" init -backend=false -input=false -lockfile=readonly
 
       - name: Validate Terraform configuration
-        run: terraform -chdir="$TERRAFORM_DIR" validate -no-color
+        run: |
+          directory="terraform/environments/dev"
+          if [ "${{ matrix.root }}" = "bootstrap" ]; then directory="terraform/bootstrap"; fi
+          terraform -chdir="$directory" validate -no-color
 
       - name: Test storage controls and reject deliberate regressions
-        run: python3 scripts/check_storage_regressions.py
+        run: python3 scripts/check_storage_regressions.py --root "${{ matrix.root }}"
 
   tflint:
     name: TFLint
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: [terraform/environments/dev, terraform/bootstrap]
 
     steps:
       - name: Check out repository
@@ -83,14 +95,14 @@ jobs:
       - name: Initialize TFLint plugins
         run: >
           tflint
-          --chdir="$TERRAFORM_DIR"
+          --chdir="${{ matrix.directory }}"
           --init
           --config="$GITHUB_WORKSPACE/.tflint.hcl"
 
       - name: Run TFLint
         run: >
           tflint
-          --chdir="$TERRAFORM_DIR"
+          --chdir="${{ matrix.directory }}"
           --config="$GITHUB_WORKSPACE/.tflint.hcl"
           --format=compact
 
@@ -107,7 +119,7 @@ jobs:
       - name: Scan Terraform with Checkov
         uses: bridgecrewio/checkov-action@v12
         with:
-          directory: terraform/environments/dev
+          directory: terraform
           framework: terraform
           quiet: true
           soft_fail: false

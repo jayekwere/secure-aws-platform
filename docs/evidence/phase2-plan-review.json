@@ -1,0 +1,366 @@
+{
+  "generated_at_utc": "2026-10-26T14:01:36.235447+00:00",
+  "infrastructure_applied": false,
+  "state_migrated": false,
+  "state_unchanged": true,
+  "plans": [
+    {
+      "root": "bootstrap",
+      "create": 18,
+      "update": 0,
+      "delete": 0,
+      "changes": [
+        {
+          "address": "aws_kms_alias.state",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_kms_key.state",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket.access_logs",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket.state",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_lifecycle_configuration.access_logs",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_lifecycle_configuration.state",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_logging.state",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_notification.state",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_ownership_controls.access_logs",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_ownership_controls.state",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_policy.access_logs",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_policy.state",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_public_access_block.access_logs",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_public_access_block.state",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_server_side_encryption_configuration.access_logs",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_server_side_encryption_configuration.state",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_versioning.access_logs",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_versioning.state",
+          "actions": [
+            "create"
+          ]
+        }
+      ],
+      "plan_sha256": "f15a20a428cbe536086bc279f428868748f7996a9d6e7722ecf4955c94a0606e",
+      "terraform_source_sha256": {
+        "terraform/bootstrap/.terraform.lock.hcl": "1a36c2605659fada2bead170a84388bf2c1c7a0cd3bbaac948a91b9ed2ffc37a",
+        "terraform/bootstrap/main.tf": "6cd659eeeb9874c01dfe62ae3d854723d3bb9bebe7d214d945576d54a45d58cc",
+        "terraform/bootstrap/outputs.tf": "2dbe9d6e4378d7d30494829f97fd4b88cc6365b3346d5f53792900c796c28d44",
+        "terraform/bootstrap/variables.tf": "e9d649521aa75683aef8557fe513ded304f96a88b7dba7b4a3e143675e069969",
+        "terraform/bootstrap/versions.tf": "0ffd07c513ba4e2f385eaa2d0278fd6ed3056547f7ead6eb41cb4a9fedbb909f"
+      }
+    },
+    {
+      "root": "dev",
+      "create": 34,
+      "update": 1,
+      "delete": 0,
+      "changes": [
+        {
+          "address": "aws_cloudtrail.project",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_event_rule.security[\"audit_controls\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_event_rule.security[\"bucket_controls\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_event_rule.security[\"key_controls\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_event_rule.security[\"object_deletion\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_event_target.security[\"audit_controls\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_event_target.security[\"bucket_controls\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_event_target.security[\"key_controls\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_event_target.security[\"object_deletion\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_group.audit",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.security_queue[\"delivery-dlq\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.security_queue[\"events\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role.cloudtrail",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role.workload[\"reader\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role.workload[\"writer\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role_policy.cloudtrail",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role_policy.workload[\"reader\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role_policy.workload[\"writer\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_kms_alias.audit",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_kms_key.audit",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_kms_key.secure_data",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket.audit",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_lifecycle_configuration.audit",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_logging.audit",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_logging.secure_data",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_notification.secure_data",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_ownership_controls.audit",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_policy.audit",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_public_access_block.audit",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_server_side_encryption_configuration.audit",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_s3_bucket_versioning.audit",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_sqs_queue.security[\"delivery-dlq\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_sqs_queue.security[\"events\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_sqs_queue_policy.security[\"delivery-dlq\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_sqs_queue_policy.security[\"events\"]",
+          "actions": [
+            "create"
+          ]
+        }
+      ],
+      "plan_sha256": "ccd2a6fa1e197a245bff9446595b63ce4b1cc821533cdc1de5309556baa941fa",
+      "terraform_source_sha256": {
+        "terraform/environments/dev/.terraform.lock.hcl": "ea0eac9196a898031e41aba8fd033ab91d6ed281623e25d0b17a2d743e9bf64d",
+        "terraform/environments/dev/bucket-policy.tf": "717ae550783e1ce05bfe0cd05cba91a569b01dad87e543b79d483d46b8653f84",
+        "terraform/environments/dev/detection.tf": "0f3d0685ce0824bfb0bdfbf9c5152934b551a478ea142bac11cd75e4c6900ee7",
+        "terraform/environments/dev/iam.tf": "b35d3e0c2e3885c6530d0551447f131b19c6651d34023a3bf523e54b7aa22ba0",
+        "terraform/environments/dev/kms.tf": "33c952dd4da1f349321700de5867de3c8ed7f2839558200c6fe51b651d25d720",
+        "terraform/environments/dev/lifecycle.tf": "70b14b5a26f4c49b2ff231d174b5b2bc6bcbd270aeba33a70c2b8daf7c05d390",
+        "terraform/environments/dev/logging.tf": "1cf938a5e1da36455301df810b56152a91294812ed45de0eabd4b44f2c89f466",
+        "terraform/environments/dev/main.tf": "3f655ab9645ca0c643aceecadfc361661870bc352e2ef849b490380d1c0639e9",
+        "terraform/environments/dev/outputs.tf": "1b3d3b50d67d8889851fc8b50376e2723439480847b0959556a6b653d5ed249c",
+        "terraform/environments/dev/providers.tf": "ca33c977635b20bdf722dcd7d1a1712debde2ccb826ebf713c058066bc4929f0",
+        "terraform/environments/dev/security-locals.tf": "bd19bb35ecdd3b0b5cdb8f9ca5b2dde08574aa83610928d58ffb86bd827000cc",
+        "terraform/environments/dev/variables.tf": "296929a60398419818ab9b12e898990daecd39f2013f6c10bc65f675cad965da",
+        "terraform/environments/dev/versions.tf": "9277f5115ea44acccac20d31373ae30049913127957860056cbd26a778595768"
+      }
+    }
+  ]
+}

@@ -148,3 +148,14 @@ A nonexistent-key probe returned `KMS.NotFoundException` before policy authoriza
 ### Remaining Scope
 
 This completes the reviewed storage-policy milestone. Explicit workload IAM and KMS key policies, centralized logging/detection, and remote state with recovery remain separate work. The current role is an administrator; these checks do not establish workload least privilege or account-wide security coverage.
+
+
+## 2026-10-26 — Deployed Access, Audit, Detection and Remote State
+
+- Applied the authorized foundation and development plans: 52 resources created, the existing data key preserved and updated, no replacement/deletion. A missing alias-administration permission caused a partial bootstrap failure; a narrow key-administration repair completed it. Both roots now have negative regression tests for that omission.
+- Passed 56 live control/delivery checks, including role boundaries, direct-KMS denials, multipart operations, actual encrypted archive/CloudWatch delivery, a real event in SQS and an alarm reaching ALARM. Synthetic data versions were removed; security queue messages were retained.
+- Migrated both Terraform roots into their protected S3 backend and passed 16 backend checks. Real plans demonstrated encrypted native lock contention and normal lock release. Previous real state versions were retrieved privately, without restoring over active state. Both final provider-backed plans showed no changes.
+- Migration created new remote lineage IDs and serial sequences. Exact resource inventories and outputs were preserved; old local states are private archives, and remote state is authoritative.
+- Excluded malformed nonexistent-version probes from deny evidence because S3 rejected their syntax before authorization. The bootstrap state deletion restriction was checked in the live policy; no real state version was deleted.
+- Passed six mocked plan runs, all 18 deliberate regressions, both lint roots and the final Checkov scan (123 passed, 0 failed, 9 explicit exceptions). Source-bound evidence is retained under `docs/evidence/phase2-*`.
+- Hosted CI for publication is pending. External paging, budget alerts, immutable workflow dependencies, required reviews and a full restoration exercise remain follow-up work. This is a scoped development lab.

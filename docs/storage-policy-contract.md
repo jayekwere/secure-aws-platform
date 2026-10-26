@@ -4,7 +4,7 @@
 
 The reviewed policy and safer teardown setting were applied to the original development bucket on October 26, 2026. Terraform added one policy, changed one bucket-management setting, and destroyed no resources. Twenty verification checks passed; the post-apply plan reported no changes. Hosted CI has not run these local changes.
 
-The original serial-12 state was recovered from the original project checkout and matched to the existing bucket and KMS key. An unchanged copy was preserved privately before applying the reviewed plan. The active state is now serial 15 in this checkout's development directory. The original checkout's state remains an unchanged pre-apply archive: do not use it for further Terraform operations. State, backups, raw plans, and apply logs are private and ignored by Git.
+The original serial-12 state was recovered from the original project checkout and matched to the existing bucket and KMS key. An unchanged copy was preserved privately before applying the reviewed plan. At this storage milestone, active state reached serial 15 in this checkout's development directory. It was subsequently updated and migrated to the protected S3 backend in the [access/audit/state milestone](phase-2-access-audit-state.md); local copies are now recovery archives. The original checkout's state remains an unchanged pre-apply archive: do not use it for further Terraform operations. State, backups, raw plans, and apply logs are private and ignored by Git.
 
 ## Intended request contract
 
@@ -16,9 +16,9 @@ The original serial-12 state was recovered from the original project checkout an
 | `DenyUnexpectedEncryption` | Deny uploads unless the encryption header explicitly requests `aws:kms`. Missing headers and SSE-S3 requests are denied. |
 | `DenyUnexpectedKmsKey` | Require a key identifier resolving to the approved project key ARN. Missing key headers and another existing key were explicitly denied. A valid alias resolving to the approved key was accepted. |
 
-Both encryption headers are required even though bucket default encryption remains configured. Clients relying on implicit default encryption need to change. Existing objects are not migrated. Multipart uploads were verified successfully; AWS service integrations remain untested.
+Both encryption headers are required even though bucket default encryption remains configured. Clients relying on implicit default encryption need to change. Existing objects are not migrated. Multipart uploads were verified successfully; service-originated uploads into the data bucket remain untested. The later milestone separately verifies CloudTrail delivery into its dedicated audit destinations.
 
-The policy grants no read, write, or administrator access. Reader/writer roles and an explicit KMS key policy remain future work; the current key policy is externally managed.
+The policy grants no read, write, or administrator access. Reader/writer roles and an explicit KMS key policy were subsequently deployed in the [access/audit/state milestone](phase-2-access-audit-state.md). The earlier evidence on this page retains the scope of the storage-policy deployment.
 
 The provider now requires a 12-digit `expected_account_id` and sets `allowed_account_ids`. Supply the intended account ID through an uncommitted variable file or environment variable before any real plan. The root module accepts only `environment = "dev"`.
 
@@ -75,6 +75,6 @@ The [live verification record](evidence/storage-live-verification.json) contains
 
 One invalid probe used a nonexistent KMS key. AWS returned `KMS.NotFoundException` before policy authorization, so that probe is explicitly recorded as inconclusive rather than evidence of policy denial. Live testing also corrected the earlier literal-ARN-only wording: AWS resolves a valid alias to the approved key before checking the key condition.
 
-No signed credentials were sent over HTTP. The non-service transport deny was checked in the applied policy. Workload-role least privilege, explicit KMS key-policy restrictions, centralized logging/detection, remote state, and AWS service integrations remain separate work.
+No signed credentials were sent over HTTP. The non-service transport deny was checked in the applied policy. Workload roles, explicit KMS policies, centralized logging/detection and remote state were outside this initial record. Their subsequent deployment and exact live verification are documented in the [access/audit/state milestone](phase-2-access-audit-state.md). Service-originated uploads into this data bucket remain untested.
 
 References: [AWS encryption requirements](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html), [AWS transport-policy guidance](https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazon-s3-policy-keys.html#example-bucket-policies-TLS-version), [Terraform provider mocks](https://developer.hashicorp.com/terraform/language/tests/mocking).

@@ -1,0 +1,103 @@
+{
+  "verified_at_utc": "2026-10-26T13:54:54.544752+00:00",
+  "method": "AWS EventBridge TestEventPattern API with synthetic fixtures",
+  "infrastructure_applied": false,
+  "events_published": false,
+  "end_to_end_delivery_tested": false,
+  "source_sha256": {
+    "terraform/environments/dev/detection.tf": "0f3d0685ce0824bfb0bdfbf9c5152934b551a478ea142bac11cd75e4c6900ee7",
+    "scripts/check_detection_patterns.py": "1f201a324f5fbd750d25600a2391e16f4f70db83e1b191628e74262639e60de1"
+  },
+  "checks": [
+    {
+      "case": "bucket-policy-change",
+      "expected_match": true,
+      "actual_match": true,
+      "passed": true
+    },
+    {
+      "case": "unrelated-bucket",
+      "expected_match": false,
+      "actual_match": false,
+      "passed": true
+    },
+    {
+      "case": "ordinary-bucket-read",
+      "expected_match": false,
+      "actual_match": false,
+      "passed": true
+    },
+    {
+      "case": "key-disabled",
+      "expected_match": true,
+      "actual_match": true,
+      "passed": true
+    },
+    {
+      "case": "ordinary-decrypt",
+      "expected_match": false,
+      "actual_match": false,
+      "passed": true
+    },
+    {
+      "case": "workload-object-deleted",
+      "expected_match": true,
+      "actual_match": true,
+      "passed": true
+    },
+    {
+      "case": "unrelated-object",
+      "expected_match": false,
+      "actual_match": false,
+      "passed": true
+    },
+    {
+      "case": "dev-state-deleted",
+      "expected_match": true,
+      "actual_match": true,
+      "passed": true
+    },
+    {
+      "case": "bootstrap-state-deleted",
+      "expected_match": true,
+      "actual_match": true,
+      "passed": true
+    },
+    {
+      "case": "normal-lock-release",
+      "expected_match": false,
+      "actual_match": false,
+      "passed": true
+    },
+    {
+      "case": "state-key-in-data-bucket",
+      "expected_match": false,
+      "actual_match": false,
+      "passed": true
+    },
+    {
+      "case": "workload-key-in-state-bucket",
+      "expected_match": false,
+      "actual_match": false,
+      "passed": true
+    },
+    {
+      "case": "trail-stopped-by-name",
+      "expected_match": true,
+      "actual_match": true,
+      "passed": true
+    },
+    {
+      "case": "trail-stopped-by-arn",
+      "expected_match": true,
+      "actual_match": true,
+      "passed": true
+    },
+    {
+      "case": "unrelated-trail",
+      "expected_match": false,
+      "actual_match": false,
+      "passed": true
+    }
+  ]
+}

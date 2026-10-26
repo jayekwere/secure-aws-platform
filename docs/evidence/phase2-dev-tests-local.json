@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "verified_at_utc": "2026-10-26T14:43:58.247661+00:00",
+  "terraform_version": "1.15.8",
+  "method": "Mocked Terraform plans and deliberate source mutations",
+  "root": "dev",
+  "live_aws_authorization_tested": false,
+  "infrastructure_applied": false,
+  "source_sha256": {
+    "scripts/check_storage_regressions.py": "a7c99160133a3e639306f2fa8d10edec408b98b1ea38532d0246207c1a94df0f",
+    "terraform/environments/dev/.terraform.lock.hcl": "ea0eac9196a898031e41aba8fd033ab91d6ed281623e25d0b17a2d743e9bf64d",
+    "terraform/environments/dev/backend.tf": "91d430c0ddeea7ee11ffa6dbcbbcad5f52fd700c98527ac06108746514affcb7",
+    "terraform/environments/dev/bucket-policy.tf": "717ae550783e1ce05bfe0cd05cba91a569b01dad87e543b79d483d46b8653f84",
+    "terraform/environments/dev/detection.tf": "0f3d0685ce0824bfb0bdfbf9c5152934b551a478ea142bac11cd75e4c6900ee7",
+    "terraform/environments/dev/iam.tf": "b35d3e0c2e3885c6530d0551447f131b19c6651d34023a3bf523e54b7aa22ba0",
+    "terraform/environments/dev/kms.tf": "33c952dd4da1f349321700de5867de3c8ed7f2839558200c6fe51b651d25d720",
+    "terraform/environments/dev/lifecycle.tf": "70b14b5a26f4c49b2ff231d174b5b2bc6bcbd270aeba33a70c2b8daf7c05d390",
+    "terraform/environments/dev/logging.tf": "1cf938a5e1da36455301df810b56152a91294812ed45de0eabd4b44f2c89f466",
+    "terraform/environments/dev/main.tf": "3f655ab9645ca0c643aceecadfc361661870bc352e2ef849b490380d1c0639e9",
+    "terraform/environments/dev/outputs.tf": "1b3d3b50d67d8889851fc8b50376e2723439480847b0959556a6b653d5ed249c",
+    "terraform/environments/dev/providers.tf": "ca33c977635b20bdf722dcd7d1a1712debde2ccb826ebf713c058066bc4929f0",
+    "terraform/environments/dev/security-locals.tf": "b1537df1714e53578e6ce28503bbc2c7124c1bd707429f9d3989893959c4a49f",
+    "terraform/environments/dev/tests/inputs.tftest.hcl": "4263d235e88a40606c5dcdb7009ca6ad3a5ddbe5041f2100205af3abeb230790",
+    "terraform/environments/dev/tests/security.tftest.hcl": "308095d90c2558c8329641bd9a0794b067d7a4545360e53eec38b154ac8ec1d5",
+    "terraform/environments/dev/tests/storage.tftest.hcl": "bb39ebc0e9a46c613c1fb45bbfc7caac914ea5fa96e209ab50fd3dc5ffc6d24e",
+    "terraform/environments/dev/variables.tf": "296929a60398419818ab9b12e898990daecd39f2013f6c10bc65f675cad965da",
+    "terraform/environments/dev/versions.tf": "9277f5115ea44acccac20d31373ae30049913127957860056cbd26a778595768"
+  },
+  "mutations": [
+    {
+      "name": "public-acls",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "key-rotation",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "implicit-force-destroy",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "insecure-transport",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "wrong-encryption",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "wrong-key",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "allow-instead-of-deny",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "reader-can-delete",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "account-wide-role-trust",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "wrong-kms-service",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "logging-disabled",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "unbounded-event-source",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "missing-key-alias-administration",
+      "detected_by_expected_assertion": true
+    }
+  ],
+  "baseline": {
+    "status": "pass",
+    "passed": 5,
+    "failed": 0,
+    "errored": 0,
+    "skipped": 0
+  }
+}

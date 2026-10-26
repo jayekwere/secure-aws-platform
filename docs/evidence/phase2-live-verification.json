@@ -1,0 +1,277 @@
+{
+  "verified_at_utc": "2026-10-26T14:41:20.005438+00:00",
+  "method": "Live AWS control queries and synthetic allowed/denied requests using administrator, reader and writer sessions",
+  "infrastructure_applied": true,
+  "checks": [
+    {
+      "name": "reader role assumed by named administrator",
+      "passed": true
+    },
+    {
+      "name": "reader trust remains administrator-only",
+      "passed": true
+    },
+    {
+      "name": "writer role assumed by named administrator",
+      "passed": true
+    },
+    {
+      "name": "writer trust remains administrator-only",
+      "passed": true
+    },
+    {
+      "name": "data public blocking and ownership",
+      "passed": true
+    },
+    {
+      "name": "data versioning enabled",
+      "passed": true
+    },
+    {
+      "name": "state public blocking and ownership",
+      "passed": true
+    },
+    {
+      "name": "state versioning enabled",
+      "passed": true
+    },
+    {
+      "name": "audit public blocking and ownership",
+      "passed": true
+    },
+    {
+      "name": "audit versioning enabled",
+      "passed": true
+    },
+    {
+      "name": "access-log public blocking and ownership",
+      "passed": true
+    },
+    {
+      "name": "access-log versioning enabled",
+      "passed": true
+    },
+    {
+      "name": "data server access logging configured",
+      "passed": true
+    },
+    {
+      "name": "state server access logging configured",
+      "passed": true
+    },
+    {
+      "name": "audit server access logging configured",
+      "passed": true
+    },
+    {
+      "name": "data EventBridge enabled",
+      "passed": true
+    },
+    {
+      "name": "state EventBridge enabled",
+      "passed": true
+    },
+    {
+      "name": "Data state and audit have distinct CMKs",
+      "passed": true
+    },
+    {
+      "name": "data key rotation and explicit recovery policy",
+      "passed": true
+    },
+    {
+      "name": "state key rotation and explicit recovery policy",
+      "passed": true
+    },
+    {
+      "name": "audit key rotation and explicit recovery policy",
+      "passed": true
+    },
+    {
+      "name": "Writer upload permitted in workload prefix",
+      "passed": true
+    },
+    {
+      "name": "Reader downloads writer object with expected content",
+      "passed": true
+    },
+    {
+      "name": "Reader can read an exact workload object version",
+      "passed": true
+    },
+    {
+      "name": "Reader upload denied",
+      "passed": true
+    },
+    {
+      "name": "Writer download denied",
+      "passed": true
+    },
+    {
+      "name": "Writer deletion denied",
+      "passed": true
+    },
+    {
+      "name": "Reader deletion denied",
+      "passed": true
+    },
+    {
+      "name": "Writer outside-prefix upload denied",
+      "passed": true
+    },
+    {
+      "name": "Reader outside-prefix download denied",
+      "passed": true
+    },
+    {
+      "name": "reader bounded prefix listing permitted",
+      "passed": true
+    },
+    {
+      "name": "reader unbounded listing denied",
+      "passed": true
+    },
+    {
+      "name": "reader state access denied",
+      "passed": true
+    },
+    {
+      "name": "reader audit access denied",
+      "passed": true
+    },
+    {
+      "name": "reader direct KMS operation denied",
+      "passed": true
+    },
+    {
+      "name": "writer bounded prefix listing permitted",
+      "passed": true
+    },
+    {
+      "name": "writer unbounded listing denied",
+      "passed": true
+    },
+    {
+      "name": "writer state access denied",
+      "passed": true
+    },
+    {
+      "name": "writer audit access denied",
+      "passed": true
+    },
+    {
+      "name": "writer direct KMS operation denied",
+      "passed": true
+    },
+    {
+      "name": "Administrator retains encrypted data access",
+      "passed": true
+    },
+    {
+      "name": "Encryption header guard still denies headerless workload upload",
+      "passed": true
+    },
+    {
+      "name": "Writer multipart upload and key permissions work",
+      "passed": true
+    },
+    {
+      "name": "Safe management-event probe preserves enabled versioning",
+      "passed": true
+    },
+    {
+      "name": "Multi-region trail is logging with encryption and integrity validation enabled",
+      "passed": true
+    },
+    {
+      "name": "CloudWatch log group encryption and retention configured",
+      "passed": true
+    },
+    {
+      "name": "events queue encrypted with fourteen-day retention",
+      "passed": true
+    },
+    {
+      "name": "delivery-dlq queue encrypted with fourteen-day retention",
+      "passed": true
+    },
+    {
+      "name": "Delivery DLQ initially has no visible messages",
+      "passed": true
+    },
+    {
+      "name": "Four active EventBridge rules with delivery DLQ",
+      "passed": true
+    },
+    {
+      "name": "All synthetic object versions removed by exact version ID",
+      "passed": true
+    },
+    {
+      "name": "CloudTrail delivered a readable archive object encrypted with the audit CMK",
+      "passed": true
+    },
+    {
+      "name": "CloudTrail events were delivered to the encrypted CloudWatch log group",
+      "passed": true
+    },
+    {
+      "name": "A real synthetic security probe reached SQS through EventBridge",
+      "passed": true
+    },
+    {
+      "name": "EventBridge delivery DLQ has no visible failed deliveries",
+      "passed": true
+    },
+    {
+      "name": "The pending-event CloudWatch alarm reached ALARM",
+      "passed": true
+    }
+  ],
+  "synthetic_versions_removed": true,
+  "limitations": [
+    "Not an account-wide security assessment",
+    "No external paging, automated remediation or cross-region replication",
+    "Root recovery and Terraform destroy protections are not exercised destructively",
+    "S3 server-access-log delivery configured but resulting log objects not verified",
+    "Integrity validation enabled; complete digest-chain validation was not performed"
+  ],
+  "delivery_observed": {
+    "cloudtrail_archive": true,
+    "cloudwatch_events": true,
+    "security_probe_in_queue": true,
+    "queue_alarm": true,
+    "delivery_dlq_empty": true
+  },
+  "source_sha256": {
+    ".github/workflows/terraform-security.yml": "1449b8c91cb14a287de49273f51b11130cc3dc20be7347d8cf9ca5d6734cc1ad",
+    ".tflint.hcl": "47c7d922abb5f4d1704e291c92964491dc74dae658b9278245a5341aad954b8a",
+    "scripts/check_detection_patterns.py": "1f201a324f5fbd750d25600a2391e16f4f70db83e1b191628e74262639e60de1",
+    "scripts/check_storage_regressions.py": "a7c99160133a3e639306f2fa8d10edec408b98b1ea38532d0246207c1a94df0f",
+    "terraform/bootstrap/.terraform.lock.hcl": "1a36c2605659fada2bead170a84388bf2c1c7a0cd3bbaac948a91b9ed2ffc37a",
+    "terraform/bootstrap/backend.tf": "91d430c0ddeea7ee11ffa6dbcbbcad5f52fd700c98527ac06108746514affcb7",
+    "terraform/bootstrap/main.tf": "faf80e6236ccb0db52c2e253e865a0a1cf4013a540628757c53a674fb4ba043f",
+    "terraform/bootstrap/outputs.tf": "2dbe9d6e4378d7d30494829f97fd4b88cc6365b3346d5f53792900c796c28d44",
+    "terraform/bootstrap/tests/backend.tftest.hcl": "a9ccb9245746928fb6291dbf95a0dff2a06819bb462e6c202a8bb215f8350741",
+    "terraform/bootstrap/variables.tf": "e9d649521aa75683aef8557fe513ded304f96a88b7dba7b4a3e143675e069969",
+    "terraform/bootstrap/versions.tf": "0ffd07c513ba4e2f385eaa2d0278fd6ed3056547f7ead6eb41cb4a9fedbb909f",
+    "terraform/environments/dev/.terraform.lock.hcl": "ea0eac9196a898031e41aba8fd033ab91d6ed281623e25d0b17a2d743e9bf64d",
+    "terraform/environments/dev/backend.tf": "91d430c0ddeea7ee11ffa6dbcbbcad5f52fd700c98527ac06108746514affcb7",
+    "terraform/environments/dev/bucket-policy.tf": "717ae550783e1ce05bfe0cd05cba91a569b01dad87e543b79d483d46b8653f84",
+    "terraform/environments/dev/detection.tf": "0f3d0685ce0824bfb0bdfbf9c5152934b551a478ea142bac11cd75e4c6900ee7",
+    "terraform/environments/dev/iam.tf": "b35d3e0c2e3885c6530d0551447f131b19c6651d34023a3bf523e54b7aa22ba0",
+    "terraform/environments/dev/kms.tf": "33c952dd4da1f349321700de5867de3c8ed7f2839558200c6fe51b651d25d720",
+    "terraform/environments/dev/lifecycle.tf": "70b14b5a26f4c49b2ff231d174b5b2bc6bcbd270aeba33a70c2b8daf7c05d390",
+    "terraform/environments/dev/logging.tf": "1cf938a5e1da36455301df810b56152a91294812ed45de0eabd4b44f2c89f466",
+    "terraform/environments/dev/main.tf": "3f655ab9645ca0c643aceecadfc361661870bc352e2ef849b490380d1c0639e9",
+    "terraform/environments/dev/outputs.tf": "1b3d3b50d67d8889851fc8b50376e2723439480847b0959556a6b653d5ed249c",
+    "terraform/environments/dev/providers.tf": "ca33c977635b20bdf722dcd7d1a1712debde2ccb826ebf713c058066bc4929f0",
+    "terraform/environments/dev/security-locals.tf": "b1537df1714e53578e6ce28503bbc2c7124c1bd707429f9d3989893959c4a49f",
+    "terraform/environments/dev/tests/inputs.tftest.hcl": "4263d235e88a40606c5dcdb7009ca6ad3a5ddbe5041f2100205af3abeb230790",
+    "terraform/environments/dev/tests/security.tftest.hcl": "308095d90c2558c8329641bd9a0794b067d7a4545360e53eec38b154ac8ec1d5",
+    "terraform/environments/dev/tests/storage.tftest.hcl": "bb39ebc0e9a46c613c1fb45bbfc7caac914ea5fa96e209ab50fd3dc5ffc6d24e",
+    "terraform/environments/dev/variables.tf": "296929a60398419818ab9b12e898990daecd39f2013f6c10bc65f675cad965da",
+    "terraform/environments/dev/versions.tf": "9277f5115ea44acccac20d31373ae30049913127957860056cbd26a778595768"
+  },
+  "completed_at_utc": "2026-10-26T15:01:45.411459+00:00"
+}

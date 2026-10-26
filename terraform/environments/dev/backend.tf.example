@@ -1,0 +1,5 @@
+# Activate only after the bootstrap resources are applied and the migration plan reviewed.
+# Copy to backend.tf; provide the non-secret state_backend output using -backend-config.
+terraform {
+  backend "s3" {}
+}

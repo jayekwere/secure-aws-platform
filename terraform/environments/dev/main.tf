@@ -7,8 +7,6 @@ locals {
 }
 
 resource "aws_s3_bucket" "secure_data" {
-  #checkov:skip=CKV_AWS_18:Access logging will use a dedicated log bucket during the centralized logging phase.
-  #checkov:skip=CKV2_AWS_62:EventBridge notifications will be implemented during the event-driven remediation phase.
   #checkov:skip=CKV_AWS_144:Cross-region replication is not required for this temporary single-region development lab.
 
   bucket        = local.bucket_name

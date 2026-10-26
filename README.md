@@ -2,120 +2,118 @@
 
 [![Terraform Security Checks](https://github.com/jayekwere/secure-aws-platform/actions/workflows/terraform-security.yml/badge.svg?branch=main)](https://github.com/jayekwere/secure-aws-platform/actions/workflows/terraform-security.yml)
 
-A Terraform S3/KMS security lab with public access blocking, ACLs disabled, versioning, default customer-managed KMS encryption, lifecycle rules, and automated static checks.
+A deployed Terraform AWS security lab demonstrating enforced S3/KMS access boundaries, encrypted audit logging, security-event capture, and protected remote state.
 
-**Current scope:** one single-region development configuration. IAM policies, private networking, logging, detection, OIDC, containers, and EKS are future work. This repository does not yet implement a complete application platform.
+**Scope:** one AWS account and one development environment. Storage and detection resources are regional; CloudTrail collects management events across regions. This is an S3/KMS security foundation, with no application workloads, private network, containers or Kubernetes deployment.
 
-**Deployed milestone, October 26, 2026:** the reviewed deny-only bucket policy and safer teardown setting are applied to the existing bucket. Twenty verification checks passed, including real allow/deny requests and multipart uploads; the final Terraform plan reported no changes. See the [request contract and verification record](docs/storage-policy-contract.md). Hosted CI has not run these local changes.
+**Deployment, October 26, 2026:** the access, audit, detection and state foundation is applied. The existing data bucket and encryption key were preserved. Reader/writer authorization and real CloudTrail/EventBridge delivery have live evidence. See the [deployment record](docs/phase-2-access-audit-state.md), [live checks](docs/evidence/phase2-live-verification.json) and [state verification](docs/evidence/phase2-state-migration.json). Hosted CI for this publication is pending.
 
-## Architecture defined in code
+## Architecture
 
-`terraform/environments/dev` is the only Terraform root module. It defines one S3 bucket, its configuration resources, a KMS key and alias, and a random bucket-name suffix. There are no reusable child modules or application workloads.
+Two Terraform roots separate the state/log foundation from the development controls:
+
+- [`terraform/bootstrap`](terraform/bootstrap): protected state bucket, dedicated state CMK and terminal S3 access-log bucket.
+- [`terraform/environments/dev`](terraform/environments/dev): data storage, bounded workload roles, audit CMK/archive, CloudTrail, CloudWatch, EventBridge and SQS.
 
 ```mermaid
 flowchart LR
-    CI["GitHub Actions"] -. "static checks" .-> TF["Terraform dev configuration"]
-    TF -->|"defines"| S3["S3 bucket"]
-    TF -->|"defines"| KMS["KMS key and alias"]
-    S3 -->|"default encryption"| KMS
-    S3 --- Controls["Public access block, ownership, versioning, lifecycle"]
+    Roles["Reader / writer roles"] -->|"workloads/ only"| Data["Data S3 bucket"]
+    Data --> DataKey["Data CMK"]
+    State["Versioned Terraform state"] --> StateKey["State CMK + native locking"]
+    Data -. "object operations" .-> Trail["Multi-region CloudTrail"]
+    State -. "object operations" .-> Trail
+    Trail --> Archive["Encrypted audit S3 archive"]
+    Trail --> CW["Encrypted CloudWatch logs"]
+    Events["CloudTrail API events + S3 deletion events"] --> Rules["Four EventBridge rules"]
+    Rules --> Queue["Encrypted SQS + delivery DLQ"]
+    Queue --> Alarms["Visible queue alarms"]
+    Data --> Access["Separate S3 access-log bucket"]
+    State --> Access
+    Archive --> Access
 ```
 
-The workflow validates source code; it does not deploy to AWS. The diagram describes the configuration, not independently observed live resources.
+GitHub Actions validates configuration without AWS credentials; it does not deploy. Logs, state and data have separate access boundaries. The S3 access-log destination uses SSE-S3 because AWS requires it for that delivery service; the data, state and audit keys are customer managed.
 
-## Implemented controls
+## Implemented controls and evidence
 
-These settings are defined in Terraform. Live configuration must be checked separately.
-
-| Control | Configuration | Source |
+| Control | Enforced behavior | Source / evidence |
 | --- | --- | --- |
-| S3 public access | All four bucket public-access-block settings are `true` | [main.tf](terraform/environments/dev/main.tf) |
-| Object ownership | `BucketOwnerEnforced` disables ACL-based access control | [main.tf](terraform/environments/dev/main.tf) |
-| Recovery from overwrite/deletion | Object versioning is enabled | [main.tf](terraform/environments/dev/main.tf) |
-| Default object encryption | `aws:kms` using the project key; S3 Bucket Key enabled | [main.tf](terraform/environments/dev/main.tf) |
-| Key management | Customer-managed KMS key, alias, automatic rotation | [kms.tf](terraform/environments/dev/kms.tf) |
-| Bucket request policy | Deny non-service HTTP requests and uploads without explicit SSE-KMS/project-key selection | [bucket-policy.tf](terraform/environments/dev/bucket-policy.tf) |
-| Storage lifecycle | Abort incomplete multipart uploads after 7 days; expire noncurrent versions after 30 days | [lifecycle.tf](terraform/environments/dev/lifecycle.tf) |
-| Provider reproducibility | Provider constraints and a committed dependency lockfile | [versions.tf](terraform/environments/dev/versions.tf), [lockfile](terraform/environments/dev/.terraform.lock.hcl) |
-| Automated validation | Terraform formatting/validation, TFLint, blocking Checkov scan, and local mocked regression tests configured for CI | [workflow](.github/workflows/terraform-security.yml), [test runner](scripts/check_storage_regressions.py), [suppression decisions](docs/phase-1-secure-s3-foundation.md#checkov-finding-decisions) |
+| Public exposure and ownership | All four public-access blocks; ACLs disabled; versioning on all four buckets | [Data](terraform/environments/dev/main.tf), [audit](terraform/environments/dev/logging.tf), [foundation](terraform/bootstrap/main.tf), [live queries](docs/evidence/phase2-live-verification.json) |
+| Upload encryption and transport | Deny non-service HTTP and uploads missing explicit SSE-KMS/project-key selection | [Bucket policy](terraform/environments/dev/bucket-policy.tf), [request contract](docs/storage-policy-contract.md) |
+| Workload access | Reader can read versions; writer can upload/manage multipart uploads; both limited to `workloads/`; neither can delete, access state/audit, or use KMS directly | [IAM](terraform/environments/dev/iam.tf), [live allowed/denied requests](docs/evidence/phase2-live-verification.json) |
+| Key management | Explicit named administration, root-only policy recovery, rotation and service/context restrictions; configured 30-day deletion windows and Terraform deletion guards | [Data key](terraform/environments/dev/kms.tf), [shared policy](terraform/environments/dev/security-locals.tf), [audit key](terraform/environments/dev/logging.tf), [state key](terraform/bootstrap/main.tf) |
+| Audit logging | Enabled multi-region CloudTrail, integrity validation enabled, encrypted S3/CloudWatch destinations, project data/state object events | [Logging](terraform/environments/dev/logging.tf), [observed delivery](docs/evidence/phase2-live-verification.json) |
+| Detection | Four rules capture bucket/key/trail changes and scoped deletions; encrypted queues retain events for 14 days, with a delivery DLQ and queue alarms | [Detection](terraform/environments/dev/detection.tf), [pattern tests](docs/evidence/phase2-event-patterns.json), [live delivery](docs/evidence/phase2-live-verification.json) |
+| Remote state | Separate versioned bucket and CMK, named administrator access, exact state-key deletion denies, native lockfile settings; both roots migrated | [Bootstrap](terraform/bootstrap), [backend verification](docs/evidence/phase2-state-migration.json) |
+| Retention and cleanup | Incomplete multipart uploads aborted after 7 days; noncurrent data versions expire after 30 days; current logs after 365 days and old log/state versions after 90 days | [Data lifecycle](terraform/environments/dev/lifecycle.tf), [archive](terraform/environments/dev/logging.tf), [foundation](terraform/bootstrap/main.tf) |
+| Automated validation | Both roots have mocked plan tests, deliberate regression checks, formatting, validation, TFLint and blocking Checkov | [Workflow](.github/workflows/terraform-security.yml), [test runner](scripts/check_storage_regressions.py) |
 
-Public access blocking and the deny-only policy do not define which authenticated identities should have access. The new policy requires explicit encryption headers after deployment; default encryption alone does not. Existing objects are not migrated.
+The workload roles are assumed by the existing administrator for this demonstration. They are not connected to an application. The administrator can change policies; these controls are not an organizational restriction on that administrator.
 
-## Verification status
-
-The October 25, 2026 source review covered [commit f34d2dc](https://github.com/jayekwere/secure-aws-platform/tree/f34d2dc1ca354be9c1cc766cf2fb586360ef806e).
+## Verification results
 
 | Evidence | Result and limit |
 | --- | --- |
-| [Hosted workflow run](https://github.com/jayekwere/secure-aws-platform/actions/runs/40050245606), October 23, 2026, Vancouver time | All three jobs passed. Checkov reported 18 passed, 0 failed, 4 skipped. This is a dated result, not a count guaranteed for future scanner versions. |
-| Local source validation, October 25, 2026 | Formatting, backend-disabled initialization with the lockfile read-only, and provider validation passed using Terraform 1.15.8. No AWS account was accessed. |
-| Historical manual deployments | The [learning log](docs/learning-log.md) records deployments and AWS CLI verification in July and August. Raw AWS verification output is not committed. |
-| Local storage tests, October 26, 2026 | Four mocked plan tests passed; all seven deliberate regressions were detected. [Results and source hashes](docs/evidence/storage-policy-tests-local.json). These are configuration tests, not live AWS authorization tests. |
-| Local lint/security scans, October 26, 2026 | [TFLint 0.64.0](docs/evidence/storage-tflint-local.json) reported no issues. [Checkov 3.3.30](docs/evidence/storage-checkov-local.json) reported 19 passed, 0 failed, 4 skipped, and 0 parsing errors. Both ran with read-only source mounts and container networking disabled. |
-| Read-only AWS console inspection, October 25, 2026 | The existing lab bucket was found in Ohio. This was a pre-deployment inspection of selected controls. [Scope](docs/storage-policy-contract.md#read-only-console-observations). |
-| Applied controls and live verification, October 26, 2026 | [Twenty checks passed](docs/evidence/storage-live-verification.json): approved-key uploads/downloads, different-key and missing-header denials, anonymous-read denial, multipart compatibility, account guard, and control queries. Synthetic versions were removed. The post-apply Terraform plan reported no changes. |
+| [Initial storage milestone](docs/evidence/storage-live-verification.json) | 20 earlier live checks, including correct-key/multipart requests, different-key and missing-header denials. Historical snapshot; overlaps with later checks. |
+| [Current live controls](docs/evidence/phase2-live-verification.json) | 56 checks passed: real role assumptions, allowed/denied requests, storage/key queries and observed encrypted log/event delivery. Synthetic data versions removed; queue events retained. |
+| [Remote-state verification](docs/evidence/phase2-state-migration.json) | 16 checks passed: both roots migrated, real lock contention, encrypted locks, previous-version retrieval and final no-change plans. Metadata transitions and excluded probes are recorded. |
+| [Dev](docs/evidence/phase2-dev-tests-local.json) and [bootstrap](docs/evidence/phase2-bootstrap-tests-local.json) plan tests | 6 mocked plan runs passed; all 18 deliberate regressions were rejected, including omitted alias-administration permissions. No AWS deployment occurs in these tests. |
+| [EventBridge pattern checks](docs/evidence/phase2-event-patterns.json) | 15 positive/negative fixtures passed using AWS's read-only evaluator. Actual delivery has separate live evidence. |
+| [Checkov](docs/evidence/phase2-checkov-local.json) and [TFLint](docs/evidence/phase2-tflint-local.json) | Checkov 3.3.30: 123 passed, 0 failed, 9 explicit exceptions, 0 parsing errors. TFLint 0.64.0: both roots clean using Terraform recommended rules. |
 
-Mocked tests cover configuration regressions. A separate live verification used the existing administrator role and synthetic objects; it does not prove least-privilege workload roles. Automated drift checks remain absent.
+Evidence includes timestamps and source hashes where applicable. The older `storage-*` evidence and original [reviewed plans](docs/evidence/phase2-plan-review.json) describe their dated snapshots. The [deployment record](docs/phase-2-access-audit-state.md) explains the alias-permission repair and the final configuration.
 
 ## Run the static checks
 
-Run from the repository root. Terraform 1.15.8 matches the workflow; [versions.tf](terraform/environments/dev/versions.tf) declares the supported range. Provider downloads require network access. These commands do not require AWS credentials or deploy infrastructure.
+These checks need Terraform 1.15.8 and provider downloads, but no AWS credentials. Backend initialization is disabled for static validation and the native plan tests use mocked providers.
 
 ```sh
 terraform fmt -check -recursive terraform
 terraform -chdir=terraform/environments/dev init -backend=false -input=false -lockfile=readonly
+terraform -chdir=terraform/bootstrap init -backend=false -input=false -lockfile=readonly
 terraform -chdir=terraform/environments/dev validate -no-color
-terraform -chdir=terraform/environments/dev test -no-color
+terraform -chdir=terraform/bootstrap validate -no-color
+python3 scripts/check_storage_regressions.py --root dev
+python3 scripts/check_storage_regressions.py --root bootstrap
 ```
 
-To run the remaining checks locally, install TFLint 0.64.0 and Checkov. The recorded hosted run used Checkov 3.3.30; the workflow uses mutable action tags, so future runs can resolve different dependencies.
+For TFLint 0.64.0 and Checkov:
 
 ```sh
 tflint --chdir=terraform/environments/dev --init --config="$PWD/.tflint.hcl"
 tflint --chdir=terraform/environments/dev --config="$PWD/.tflint.hcl" --format=compact
-checkov -d terraform/environments/dev --framework terraform
+tflint --chdir=terraform/bootstrap --init --config="$PWD/.tflint.hcl"
+tflint --chdir=terraform/bootstrap --config="$PWD/.tflint.hcl" --format=compact
+checkov -d terraform --framework terraform
 ```
 
-TFLint currently enables only the Terraform recommended ruleset, not the AWS ruleset. Checkov fails on unsuppressed findings; its four documented suppressions remain active. The workflow retains console output but does not upload verification artifacts.
+TFLint does not enable the AWS ruleset. Checkov fails on unsuppressed findings; [all nine exceptions](docs/phase-2-access-audit-state.md#scanner-exceptions) are documented. The workflow uses mutable action tags and does not upload evidence artifacts.
 
-To run the mocked tests and prove all seven deliberately weakened configurations fail the intended assertions:
+## Operations and boundaries
 
-```sh
-python3 scripts/check_storage_regressions.py
-```
+- **State:** both roots use partial S3 backend blocks. Live operations require the correct private backend settings and authorized temporary credentials. State, raw plans, backend settings, recovery copies and credentials are excluded from Git. The original recovered checkout is an archive, not an active Terraform workspace.
+- **Encryption contract:** uploads must explicitly request SSE-KMS and a key identifier resolving to the data CMK. AWS accepts an alias resolving to that key. Existing objects are not automatically re-encrypted.
+- **Retention:** versioning and deletion guards are not immutable backups. Archives have no Object Lock, cross-account isolation or cross-region replication. A key administrator can still disable a key directly in AWS.
+- **Monitoring:** management writes and non-KMS management reads are recorded; KMS reads are excluded. Object-event logging is limited to data/state buckets. EventBridge detection runs in the deployment region. S3 access logging is configured; its best-effort object delivery was not verified in this milestone. Integrity validation is enabled, but a complete digest-chain validation exercise was not performed.
+- **Response:** SQS events and CloudWatch alarms require operator review. No external email/paging subscription, continuous consumer or automatic remediation is configured.
+- **Cost:** customer-managed keys, CloudTrail data events, logs, storage, messaging and alarms incur charges. No budget alarm is configured.
+- **Assurance:** this is a development lab, not an account-wide security assessment. Required GitHub checks/reviews, immutable action dependencies and enforced exception expiry remain absent.
 
-For read-only AWS checks against an existing lab, see the [phase notes](docs/phase-1-secure-s3-foundation.md#read-only-aws-verification).
+## Next steps
 
-## Lab boundaries and deferred controls
+1. Connect an operator-approved alert destination and demonstrate notification receipt.
+2. Add a cost budget/alert appropriate to this lab's usage.
+3. Pin workflow dependencies, enforce checks/review and retain source-bound CI artifacts.
+4. Demonstrate a documented detection-to-restoration exercise and scheduled drift checking.
 
-- **Destructive teardown:** automatic removal of bucket contents is disabled by default. Explicit `allow_force_destroy = true` permits removal of contents and versions. This does not prevent deleting an empty bucket or scheduling key deletion; the KMS deletion window remains 7 days. These settings do not establish immutable retention or a backup strategy.
-- **Development scope:** the root module accepts only `dev`. Use disposable development data.
-- **External identity assumptions:** the provider requires `expected_account_id` and rejects other accounts, but credentials and role assumption remain external. No reader/writer IAM roles or explicit KMS key policy are managed here.
-- **Live request contract:** uploads need explicit SSE-KMS and a key identifier resolving to the approved key. AWS accepts an alias for that same key. Other existing keys, missing headers, and SSE-S3 requests were rejected. Signed HTTP requests were not sent; the transport deny was verified in the applied policy.
-- **Local state:** the recovered state in this checkout is now authoritative; the original checkout's state remains an unchanged pre-apply archive. Use this checkout for subsequent Terraform operations. There is no remote backend or shared recovery process. [Ignore rules](.gitignore) exclude state and plans from ordinary Git adds.
-- **Deferred observability:** S3 access logging, CloudTrail configuration, EventBridge notifications, alerts, and remediation are absent. Any account-level controls configured elsewhere are outside this repository's evidence.
-- **Validation and review limits:** the new tests have local evidence only. Workflow dependency locking/SHA pins and exception-expiry enforcement remain absent. The October 25 review found no branch protection or repository rulesets enforcing checks and review.
-
-See the [phase notes](docs/phase-1-secure-s3-foundation.md) for control details, historical deployment claims, and the individual Checkov decisions.
-
-## Prioritized planned work
-
-The original state was recovered, matched to AWS, and used to update the existing resources without replacements or deletions. The active state and private backups are ignored by Git. Remaining planned work:
-
-| Priority | Work | Completion evidence |
-| --- | --- | --- |
-| 1 | Define S3/KMS workload reader/writer and administrator permissions, including an explicit key policy | Least-privilege role tests pass alongside the deployed request-policy checks |
-| 2 | Run the new tests in hosted CI, add immutable workflow dependencies and required checks/review | Intentionally weakened configurations fail hosted CI; dated, sanitized results can be inspected |
-| 3 | Add a separately bootstrapped remote state backend and scoped OIDC for trusted workflows that need AWS access | State locking/recovery and permitted/denied role assumptions are demonstrated |
-| 4 | Complete one CloudTrail/EventBridge detection and documented restoration scenario | A controlled bucket security configuration change produces an observable event and verified restoration |
-
-Private networking, reusable modules, container scanning, EKS, Kubernetes policies, and admission control remain longer-term possibilities outside the current S3/KMS milestone.
+Private networking, reusable child modules, OIDC deployment, container/EKS/Kubernetes controls and application workloads remain future work outside this storage-security milestone.
 
 ## Project notes
 
-- [Phase 1: S3/KMS configuration, tradeoffs, and verification](docs/phase-1-secure-s3-foundation.md)
-- [Historical learning log](docs/learning-log.md)
-- [Storage policy milestone and live inspection scope](docs/storage-policy-contract.md)
-- [Project presentation and proposed repository description](docs/project-presentation.md)
+- [Access, audit, detection and state deployment record](docs/phase-2-access-audit-state.md)
+- [Storage request contract and earlier live milestone](docs/storage-policy-contract.md)
+- [Historical S3/KMS baseline](docs/phase-1-secure-s3-foundation.md)
+- [Learning log](docs/learning-log.md)
+- [Presentation and proposed About description](docs/project-presentation.md)
 
-Use synthetic development data. Keep credentials, private keys, Terraform state, and saved plans out of source control.
+Use synthetic development data. Keep credentials, Terraform state and raw plans out of source control.

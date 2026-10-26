@@ -4,7 +4,7 @@
 
 This page records the implementation at commit `f34d2dc`: a single-region S3 development lab with customer-managed KMS default encryption and automated static validation. Source links below refer to that baseline. Subsequent local policy, safeguard, and test changes are described in the [storage policy milestone](storage-policy-contract.md).
 
-The [learning log](learning-log.md) records manual deployments and verification in July and August 2026. Those are historical reports: raw AWS CLI results and saved deployment plans are not committed. The initial October 25 review inspected source, CI, and static Terraform checks. A later read-only console inspection found the original bucket; its limited observations are recorded in the [milestone notes](storage-policy-contract.md#read-only-console-observations). Full drift and authorization verification remain outstanding.
+The [learning log](learning-log.md) records manual deployments and verification in July and August 2026. Those are historical reports: raw AWS CLI results and saved deployment plans are not committed. The initial October 25 review inspected source, CI, and static Terraform checks. A later read-only console inspection found the original bucket; its limited observations are recorded in the [milestone notes](storage-policy-contract.md#read-only-console-observations). Reconciliation and storage authorization checks were still outstanding at that inspection; the [subsequent deployed milestone](storage-policy-contract.md) records their completion.
 
 ## Resources managed
 
@@ -94,7 +94,7 @@ That is a historical report of reconciliation at the time of the plan. It is not
 
 ## Read-only AWS verification
 
-For an existing lab, run from the repository root with its local state available and temporary credentials authorized for the read operations below. State supplies resource identifiers; the AWS queries inspect live settings. If the state or resources are absent, stop and establish the lab's status rather than treating missing output as a passing result.
+For an existing lab, run from the repository root with its active backend initialized and temporary credentials authorized for the read operations below. The current deployment uses protected remote state; local recovered states are archives. State supplies resource identifiers; the AWS queries inspect live settings. If the state or resources are absent, stop and establish the lab's status rather than treating missing output as a passing result.
 
 Confirm the returned account and role before querying resources:
 
@@ -142,4 +142,4 @@ The suppressions include phase-based reasons, but do not carry owners, expiry da
 
 ## Next milestone
 
-The subsequent [deployed milestone](storage-policy-contract.md) adds a request policy, input safeguards, and mocked regression tests. The original state was recovered and reconciled, the reviewed plan applied, and synthetic live requests verified. Workload IAM/key-policy boundaries, remote state, and logging/detection remain on the [current roadmap](../README.md#prioritized-planned-work).
+The subsequent [deployed milestone](storage-policy-contract.md) adds a request policy, input safeguards, and mocked regression tests. The original state was recovered and reconciled, the reviewed plan applied, and synthetic live requests verified. Workload IAM/key-policy boundaries, remote state, and logging/detection were subsequently deployed and verified in the [access/audit/state milestone](phase-2-access-audit-state.md). Further work is on the [current roadmap](../README.md#next-steps).

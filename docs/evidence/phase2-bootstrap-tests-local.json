@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "verified_at_utc": "2026-10-26T14:43:58.249082+00:00",
+  "terraform_version": "1.15.8",
+  "method": "Mocked Terraform plans and deliberate source mutations",
+  "root": "bootstrap",
+  "live_aws_authorization_tested": false,
+  "infrastructure_applied": false,
+  "source_sha256": {
+    "scripts/check_storage_regressions.py": "a7c99160133a3e639306f2fa8d10edec408b98b1ea38532d0246207c1a94df0f",
+    "terraform/bootstrap/.terraform.lock.hcl": "1a36c2605659fada2bead170a84388bf2c1c7a0cd3bbaac948a91b9ed2ffc37a",
+    "terraform/bootstrap/backend.tf": "91d430c0ddeea7ee11ffa6dbcbbcad5f52fd700c98527ac06108746514affcb7",
+    "terraform/bootstrap/main.tf": "faf80e6236ccb0db52c2e253e865a0a1cf4013a540628757c53a674fb4ba043f",
+    "terraform/bootstrap/outputs.tf": "2dbe9d6e4378d7d30494829f97fd4b88cc6365b3346d5f53792900c796c28d44",
+    "terraform/bootstrap/tests/backend.tftest.hcl": "a9ccb9245746928fb6291dbf95a0dff2a06819bb462e6c202a8bb215f8350741",
+    "terraform/bootstrap/variables.tf": "e9d649521aa75683aef8557fe513ded304f96a88b7dba7b4a3e143675e069969",
+    "terraform/bootstrap/versions.tf": "0ffd07c513ba4e2f385eaa2d0278fd6ed3056547f7ead6eb41cb4a9fedbb909f"
+  },
+  "mutations": [
+    {
+      "name": "locking-disabled",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "lockfile-deletion-blocked",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "wrong-state-service",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "unbounded-log-delivery",
+      "detected_by_expected_assertion": true
+    },
+    {
+      "name": "missing-state-alias-administration",
+      "detected_by_expected_assertion": true
+    }
+  ],
+  "baseline": {
+    "status": "pass",
+    "passed": 1,
+    "failed": 0,
+    "errored": 0,
+    "skipped": 0
+  }
+}

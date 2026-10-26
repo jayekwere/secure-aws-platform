@@ -13,13 +13,12 @@ from datetime import datetime, timezone
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "terraform/environments/dev"
 # Each replacement must match once. An invalid mutant or unrelated failure is an error.
 MUTATIONS = [
     ("public-acls", "main.tf", "block_public_acls       = true",
      "block_public_acls       = false", "All four public access protections"),
-    ("key-rotation", "kms.tf", "enable_key_rotation     = true",
-     "enable_key_rotation     = false", "Default encryption must use"),
+    ("key-rotation", "kms.tf", "enable_key_rotation                = true",
+     "enable_key_rotation                = false", "Default encryption must use"),
     ("implicit-force-destroy", "main.tf", "force_destroy = var.allow_force_destroy",
      "force_destroy = true", "Deleting bucket contents must require"),
     ("insecure-transport", "bucket-policy.tf", '"aws:SecureTransport"       = "false"',
@@ -34,6 +33,32 @@ MUTATIONS = [
      'Sid       = "DenyInsecureTransport"\n        Effect    = "Deny"',
      'Sid       = "DenyInsecureTransport"\n        Effect    = "Allow"',
      "The bucket policy must attach"),
+    ("reader-can-delete", "security-locals.tf", '["s3:GetObject", "s3:GetObjectVersion"]',
+     '["s3:GetObject", "s3:GetObjectVersion", "s3:DeleteObject"]', "Reader and writer permissions must remain separate"),
+    ("account-wide-role-trust", "iam.tf", "Principal = { AWS = local.administrator_role_arn }",
+     "Principal = { AWS = local.root_arn }", "Both workload roles must trust only"),
+    ("wrong-kms-service", "security-locals.tf", '"kms:ViaService" = local.s3_service',
+     '"kms:ViaService" = "ec2.us-east-2.amazonaws.com"', "Data cryptography must be purpose-specific"),
+    ("logging-disabled", "logging.tf", "enable_logging                = true",
+     "enable_logging                = false", "The trail must be enabled"),
+    ("unbounded-event-source", "detection.tf", '[for rule in aws_cloudwatch_event_rule.security : rule.arn]',
+     '["arn:aws:events:us-east-2:123456789012:rule/*"]', "Only the project rules may send events"),
+    ("missing-key-alias-administration", "security-locals.tf", '"kms:CreateAlias", "kms:UpdateAlias", "kms:DeleteAlias",',
+     '"kms:UpdateAlias", "kms:DeleteAlias",', "Named key administrators must be able to manage aliases"),
+]
+
+BOOTSTRAP_MUTATIONS = [
+    ("locking-disabled", "outputs.tf", "use_lockfile        = true", "use_lockfile        = false",
+     "The proposed backend must use native locking"),
+    ("lockfile-deletion-blocked", "main.tf", '["environments/dev/terraform.tfstate", "bootstrap/terraform.tfstate"]',
+     '["environments/dev/terraform.tfstate", "bootstrap/terraform.tfstate", "environments/dev/terraform.tfstate.tflock"]',
+     "State deletion must be denied on exact state keys"),
+    ("wrong-state-service", "main.tf", '"kms:ViaService" = local.s3_service',
+     '"kms:ViaService" = "ec2.us-east-2.amazonaws.com"', "State needs a rotating scoped CMK"),
+    ("unbounded-log-delivery", "main.tf", '"aws:SourceArn" = local.log_source_arns',
+     '"aws:SourceArn" = ["arn:aws:s3:::*"]', "Log delivery must be limited"),
+    ("missing-state-alias-administration", "main.tf", '"kms:CreateAlias", "kms:UpdateAlias", "kms:DeleteAlias",',
+     '"kms:UpdateAlias", "kms:DeleteAlias",', "The named state key administrator must be able to manage aliases"),
 ]
 
 
@@ -44,7 +69,10 @@ def events(output):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--report", type=Path, help="Write a sanitized JSON result on success")
+    parser.add_argument("--root", choices=["dev", "bootstrap"], default="dev")
     args = parser.parse_args()
+    source = ROOT / ("terraform/environments/dev" if args.root == "dev" else "terraform/bootstrap")
+    mutations = MUTATIONS if args.root == "dev" else BOOTSTRAP_MUTATIONS
     environment = {
         key: value for key, value in os.environ.items()
         if not key.startswith(("AWS_", "TF_"))
@@ -77,12 +105,13 @@ def main():
         "verified_at_utc": datetime.now(timezone.utc).isoformat(),
         "terraform_version": json.loads(version.stdout)["terraform_version"],
         "method": "Mocked Terraform plans and deliberate source mutations",
+        "root": args.root,
         "live_aws_authorization_tested": False,
         "infrastructure_applied": False,
         "source_sha256": {
             str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
-            for path in sorted([*SOURCE.glob("*.tf"), SOURCE / ".terraform.lock.hcl",
-                                *SOURCE.glob("tests/*.tftest.hcl"), Path(__file__).resolve()])
+            for path in sorted([*source.glob("*.tf"), source / ".terraform.lock.hcl",
+                                *source.glob("tests/*.tftest.hcl"), Path(__file__).resolve()])
         },
         "mutations": [],
     }
@@ -94,14 +123,14 @@ def main():
         def copy_configuration(name):
             target = workspace / name
             target.mkdir()
-            for path in [*SOURCE.glob("*.tf"), SOURCE / ".terraform.lock.hcl"]:
+            for path in [*source.glob("*.tf"), source / ".terraform.lock.hcl"]:
                 shutil.copyfile(path, target / path.name)
-            shutil.copytree(SOURCE / "tests", target / "tests")
+            shutil.copytree(source / "tests", target / "tests")
             return target
 
         baseline = copy_configuration("baseline")
         init_args = ["init", "-backend=false", "-input=false", "-lockfile=readonly", "-no-color"]
-        installed = SOURCE / ".terraform/providers"
+        installed = source / ".terraform/providers"
         if installed.is_dir():
             init_args.append(f"-plugin-dir={installed}")
         require_success(run(baseline, *init_args), "Provider initialization")
@@ -113,7 +142,7 @@ def main():
         report["baseline"] = summary
         print(f"PASS baseline: {summary['passed']} mocked plan tests", flush=True)
 
-        for name, filename, original, replacement, expected in MUTATIONS:
+        for name, filename, original, replacement, expected in mutations:
             target = copy_configuration(name)
             path = target / filename
             text = path.read_text()
@@ -121,7 +150,10 @@ def main():
                 raise RuntimeError(f"{name}: expected exactly one replacement target")
             path.write_text(text.replace(original, replacement))
             require_success(run(target, "validate", "-no-color"), f"{name} mutant validation")
-            result = run(target, "test", "-json", "-filter=tests/storage.tftest.hcl")
+            test_file = "tests/backend.tftest.hcl" if args.root == "bootstrap" else (
+                "tests/storage.tftest.hcl" if name in {m[0] for m in MUTATIONS[:7]} else "tests/security.tftest.hcl"
+            )
+            result = run(target, "test", "-json", f"-filter={test_file}")
             diagnostics = [event.get("diagnostic", {}) for event in events(result.stdout)]
             caught = result.returncode == 1 and any(
                 item.get("severity") == "error"
@@ -137,7 +169,7 @@ def main():
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)
         args.report.write_text(json.dumps(report, indent=2) + "\n")
-    print(f"PASS all {len(MUTATIONS)} deliberate regressions detected; AWS was not accessed", flush=True)
+    print(f"PASS all {len(mutations)} deliberate regressions detected; AWS was not accessed", flush=True)
 
 
 if __name__ == "__main__":

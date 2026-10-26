@@ -17,6 +17,10 @@ crash.*.log
 *.tfvars
 *.tfvars.json
 
+# Private backend settings
+*.tfbackend
+*.tfbackend.json
+
 # Terraform plan files
 *.tfplan
 tfplan
