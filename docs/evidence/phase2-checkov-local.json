@@ -76,5 +76,6 @@
       "resource": "aws_s3_bucket.access_logs",
       "reason": "S3 server-access-log delivery requires an SSE-S3 destination; source-account/ARN policies, public blocking, TLS and versioning compensate."
     }
-  ]
+  ],
+  "source_revision": "ea0fc9cbcd99ace8b905b084341f4def0d2148af"
 }

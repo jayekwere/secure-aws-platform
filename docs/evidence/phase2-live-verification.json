@@ -273,5 +273,6 @@
     "terraform/environments/dev/variables.tf": "296929a60398419818ab9b12e898990daecd39f2013f6c10bc65f675cad965da",
     "terraform/environments/dev/versions.tf": "9277f5115ea44acccac20d31373ae30049913127957860056cbd26a778595768"
   },
-  "completed_at_utc": "2026-10-26T15:01:45.411459+00:00"
+  "completed_at_utc": "2026-10-26T15:01:45.411459+00:00",
+  "source_revision": "ea0fc9cbcd99ace8b905b084341f4def0d2148af"
 }

@@ -6,7 +6,7 @@ A deployed Terraform AWS security lab demonstrating enforced S3/KMS access bound
 
 **Scope:** one AWS account and one development environment. Storage and detection resources are regional; CloudTrail collects management events across regions. This is an S3/KMS security foundation, with no application workloads, private network, containers or Kubernetes deployment.
 
-**Deployment, October 26, 2026:** the access, audit, detection and state foundation is applied. The existing data bucket and encryption key were preserved. Reader/writer authorization and real CloudTrail/EventBridge delivery have live evidence. See the [deployment record](docs/phase-2-access-audit-state.md), [live checks](docs/evidence/phase2-live-verification.json) and [state verification](docs/evidence/phase2-state-migration.json). Hosted CI for this publication is pending.
+**Deployment, October 26, 2026:** the access, audit, detection and state foundation is applied. The existing data bucket and encryption key were preserved. Reader/writer authorization and real CloudTrail/EventBridge delivery have live evidence. See the [deployment record](docs/phase-2-access-audit-state.md), [live checks](docs/evidence/phase2-live-verification.json) and [state verification](docs/evidence/phase2-state-migration.json). [Hosted CI](https://github.com/jayekwere/secure-aws-platform/actions/runs/40346124360) passed all five jobs for `bb56adf`.
 
 ## Architecture
 
@@ -61,7 +61,9 @@ The workload roles are assumed by the existing administrator for this demonstrat
 | [EventBridge pattern checks](docs/evidence/phase2-event-patterns.json) | 15 positive/negative fixtures passed using AWS's read-only evaluator. Actual delivery has separate live evidence. |
 | [Checkov](docs/evidence/phase2-checkov-local.json) and [TFLint](docs/evidence/phase2-tflint-local.json) | Checkov 3.3.30: 123 passed, 0 failed, 9 explicit exceptions, 0 parsing errors. TFLint 0.64.0: both roots clean using Terraform recommended rules. |
 
-Evidence includes timestamps and source hashes where applicable. The older `storage-*` evidence and original [reviewed plans](docs/evidence/phase2-plan-review.json) describe their dated snapshots. The [deployment record](docs/phase-2-access-audit-state.md) explains the alias-permission repair and the final configuration.
+Evidence includes timestamps, source revisions and hashes where applicable. A later CI portability repair added HashiCorp-verified Linux checksums to the lockfiles; provider versions and deployed resource configuration did not change. The older `storage-*` evidence and original [reviewed plans](docs/evidence/phase2-plan-review.json) describe their dated snapshots. The [deployment record](docs/phase-2-access-audit-state.md) explains the alias-permission repair and the final configuration.
+
+Current [hosted CI evidence](docs/evidence/phase2-hosted-ci.json) records all five passing jobs, six mocked plan runs and 18 rejected deliberate regressions for `bb56adf`. The workflow does not use AWS credentials or deploy infrastructure.
 
 ## Run the static checks
 

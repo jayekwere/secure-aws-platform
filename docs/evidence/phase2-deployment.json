@@ -65,5 +65,6 @@
     "terraform/environments/dev/tests/storage.tftest.hcl": "bb39ebc0e9a46c613c1fb45bbfc7caac914ea5fa96e209ab50fd3dc5ffc6d24e",
     "terraform/environments/dev/variables.tf": "296929a60398419818ab9b12e898990daecd39f2013f6c10bc65f675cad965da",
     "terraform/environments/dev/versions.tf": "9277f5115ea44acccac20d31373ae30049913127957860056cbd26a778595768"
-  }
+  },
+  "source_revision": "ea0fc9cbcd99ace8b905b084341f4def0d2148af"
 }

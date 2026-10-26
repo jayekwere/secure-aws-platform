@@ -1,6 +1,6 @@
 # Project Presentation
 
-Local draft for the repository's About fields and a short walkthrough. Editing this file does not update GitHub settings.
+Draft for the repository's About fields and a short walkthrough. Editing this file does not update GitHub settings.
 
 ## Proposed repository description
 
@@ -14,7 +14,7 @@ Terraform AWS security lab with enforced S3/KMS storage controls, bounded IAM, e
 
 Secure AWS Platform currently implements a single-region S3/KMS development foundation in Terraform. It defines public access blocking, bucket-owner-enforced ownership, versioning, default customer-managed KMS encryption with rotation, and storage lifecycle rules. GitHub Actions checks formatting, validates the configuration, runs TFLint, and blocks unsuppressed Checkov findings. The deployed milestone adds restricted reader/writer access, explicit key policies, encrypted audit logging, security-event capture and protected remote state. Live evidence distinguishes successful requests and observed event delivery from configured protections.
 
-The [deployed storage milestone](storage-policy-contract.md) adds a deny-only request policy, account/development safeguards, and regression tests. Its reviewed plan was applied to the existing bucket, 20 verification checks passed, and the final plan showed no changes. The [deployed access/audit/state milestone](phase-2-access-audit-state.md) passes six mocked plan runs, 18 deliberate regression checks and 15 EventBridge pattern checks. The live records cover role authorization, encrypted log/event delivery and state-backend verification. Hosted CI for publication is pending.
+The [deployed storage milestone](storage-policy-contract.md) adds a deny-only request policy, account/development safeguards, and regression tests. Its reviewed plan was applied to the existing bucket, 20 verification checks passed, and the final plan showed no changes. The [deployed access/audit/state milestone](phase-2-access-audit-state.md) passes six mocked plan runs, 18 deliberate regression checks and 15 EventBridge pattern checks. The live records cover role authorization, encrypted log/event delivery and state-backend verification. [Hosted CI](https://github.com/jayekwere/secure-aws-platform/actions/runs/40346124360) passed all five jobs for `bb56adf`.
 
 ## Five-minute walkthrough
 
