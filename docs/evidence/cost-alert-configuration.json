@@ -1,0 +1,19 @@
+{
+  "verified_at_utc": "2026-10-26T19:28:47.505770+00:00",
+  "method": "AWS Budgets notification/subscriber API configuration and read-back",
+  "managed_by_project_terraform": false,
+  "existing_budget_preserved": true,
+  "existing_thresholds_preserved": true,
+  "new_paid_budget_reports_or_actions": false,
+  "alert_type": "Actual cost greater than USD 0.01",
+  "recipient_count": 1,
+  "recipient_address_published": false,
+  "notification_configuration_verified": true,
+  "email_receipt_or_recipient_confirmation_verified": false,
+  "spending_cap": false,
+  "limitations": [
+    "Budget monitoring/notifications are free; usage and billing updates can be delayed",
+    "This is an early-warning notification, not an enforced spending limit",
+    "Recipient verification/email receipt still requires confirmation"
+  ]
+}

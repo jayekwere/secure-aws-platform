@@ -159,3 +159,13 @@ This completes the reviewed storage-policy milestone. Explicit workload IAM and 
 - Excluded malformed nonexistent-version probes from deny evidence because S3 rejected their syntax before authorization. The bootstrap state deletion restriction was checked in the live policy; no real state version was deleted.
 - Passed six mocked plan runs, all 18 deliberate regressions, both lint roots and the final Checkov scan (123 passed, 0 failed, 9 explicit exceptions). Source-bound evidence is retained under `docs/evidence/phase2-*`.
 - Hosted CI [passed all five jobs](https://github.com/jayekwere/secure-aws-platform/actions/runs/40346124360) for `bb56adf` after adding HashiCorp-verified Linux provider checksums; provider versions and resource configuration did not change. External paging, budget alerts, immutable workflow dependencies, required reviews and a full restoration exercise remain follow-up work. This is a scoped development lab.
+
+
+## 2026-10-26 — Foundation Handover and Free Alert Setup
+
+- Tested the exact backend-reconstruction snippet from a fresh temporary checkout. Both roots attached to existing state without migration and produced no-change AWS plans. The temporary checkout was removed.
+- Added an operations guide covering temporary authentication, private backend reconstruction, future increments, monitoring, recovery and teardown boundaries.
+- Added a free actual-cost warning above US$0.01 to an existing account budget, preserving its limit and other alerts. No paid budget report/action was created; the warning is not a spending cap.
+- Configured free account-level AWS User Notifications for only the two project queue alarms in the deployment region, without another customer-managed key or SNS topic. Email activation and receipt are separate verification steps, tracked in the evidence record.
+- Kept personal notification addresses and account-specific configuration private. The AWS account remained on its active Free plan after setup; no paid-plan upgrade was performed.
+- Updated two alarm descriptions to reflect the separate account-level routing and obtained a no-change development plan. No additional Terraform resources were created.

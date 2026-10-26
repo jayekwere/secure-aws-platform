@@ -1,0 +1,33 @@
+{
+  "verified_at_utc": "2026-10-26T19:21:40.439437+00:00",
+  "source_revision": "999a6183c81993729a99838b4705e0628223d158",
+  "method": "Fresh temporary clone, exact operations-guide identity/backend reconstruction snippet, backend attachment without migration, and provider-backed plans",
+  "new_infrastructure_applied": false,
+  "state_migrated_or_force_copied": false,
+  "provider_versions_changed": false,
+  "authentication": "Existing temporary administrator credentials; no new credentials or profiles created by this check",
+  "provider_installation": "Existing signed/locked provider cache reused; hosted CI separately verifies fresh Linux installation",
+  "tested_resume_snippet_sha256": "cf7b66882b6c4dcb4a7a8584627a9da5d97a5d2dded6c8d5e669dde932d05176",
+  "checks": [
+    {
+      "name": "Fresh checkout reconstructs private backend settings after checking account role state-key alias and both encrypted state objects",
+      "passed": true
+    },
+    {
+      "name": "dev fresh checkout attaches to existing remote state without migration",
+      "passed": true
+    },
+    {
+      "name": "dev fresh checkout produces a no-change AWS plan",
+      "passed": true
+    },
+    {
+      "name": "bootstrap fresh checkout attaches to existing remote state without migration",
+      "passed": true
+    },
+    {
+      "name": "bootstrap fresh checkout produces a no-change AWS plan",
+      "passed": true
+    }
+  ]
+}

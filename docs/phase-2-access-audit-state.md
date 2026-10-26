@@ -27,7 +27,7 @@ The deployed multi-region trail records management writes, management reads exce
 
 The archive and CloudWatch log group retain current logs for 365 days. Expired archive versions remain for another 90 days. Data, state and archive server access logs go to a separate versioned SSE-S3 bucket; that terminal bucket does not log into itself. AWS requires SSE-S3 for an S3 server-access-log destination. [S3 encryption requirements](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html), [delivery permissions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html).
 
-Four regional EventBridge rules capture project bucket configuration changes, regional key security changes, workload/state object deletion, and trail changes. The KMS rule covers all keys in the region. Events enter an encrypted SQS queue with 14-day retention; failed EventBridge deliveries use a separate queue. CloudWatch queue alarms make pending messages visible. **No external email/paging subscription, automatic remediation or continuously running consumer is configured.** These rules are not a replacement for GuardDuty or account-wide monitoring. Events in other regions have trail coverage but no corresponding regional rule deployment.
+Four regional EventBridge rules capture project bucket configuration changes, regional key security changes, workload/state object deletion, and trail changes. The KMS rule covers all keys in the region. Events enter an encrypted SQS queue with 14-day retention; failed EventBridge deliveries use a separate queue. CloudWatch queue alarms make pending messages visible. **Free account-level email routing was added during closeout; contact verification and receipt testing are recorded separately.** No automatic remediation or continuously running consumer is configured. These rules are not a replacement for GuardDuty or account-wide monitoring. Events in other regions have trail coverage but no corresponding regional rule deployment.
 
 ## Local verification and limits
 
@@ -47,9 +47,9 @@ Checkov exceptions are resource-specific comments, not a global soft-fail. Reass
 | `CKV_AWS_18` | Terminal access-log bucket | Avoid recursive self-logging; other source buckets have access logging. |
 | `CKV_AWS_145` | Terminal access-log bucket | SSE-S3 is required for this delivery service; public blocking, source restrictions and TLS still apply. |
 | `CKV2_AWS_62` | Terminal access logs, audit | No log-object notifications; bucket management changes are monitored. |
-| `CKV_AWS_252` | Trail | Security events use SQS and visible alarms. External SNS notification is deferred until a recipient is chosen. |
+| `CKV_AWS_252` | Trail | Security events use SQS and visible alarms. Separate free AWS User Notifications routes the existing queue alarms to email; no SNS topic is needed. Contact activation/receipt has separate evidence. |
 
-These archives are not immutable. There is no Object Lock, cross-account log isolation, enforced exception expiry, required GitHub checks or budget alarm in this milestone.
+These archives are not immutable. There is no Object Lock, cross-account log isolation, enforced exception expiry, required GitHub checks in this milestone. A separate free account-budget warning was configured during closeout; it is not managed by project Terraform.
 
 ## Deployment and live verification
 

@@ -151,7 +151,7 @@ run "access_audit_detection_contract" {
       ]) &&
       length(aws_cloudwatch_event_rule.security) == 4
     )
-    error_message = "Events and delivery failures need encrypted retention and visible alarms; no external pager is claimed."
+    error_message = "Events and delivery failures need encrypted retention and visible alarms; account-level email routing is configured separately."
   }
 }
 

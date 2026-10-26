@@ -106,7 +106,7 @@ resource "aws_cloudwatch_event_target" "security" {
 resource "aws_cloudwatch_metric_alarm" "security_queue" {
   for_each            = aws_sqs_queue.security
   alarm_name          = format("secure-aws-platform-%s-%s-pending", var.environment, each.key)
-  alarm_description   = "Security messages require operator review in SQS. No external notification is configured."
+  alarm_description   = "Security messages require operator review in SQS. Email routing is managed separately through account-level AWS User Notifications."
   namespace           = "AWS/SQS"
   metric_name         = "ApproximateNumberOfMessagesVisible"
   dimensions          = { QueueName = each.value.name }

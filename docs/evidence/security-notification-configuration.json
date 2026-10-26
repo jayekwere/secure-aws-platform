@@ -1,0 +1,37 @@
+{
+  "verified_at_utc": "2026-10-26T19:34:32.716365+00:00",
+  "service": "AWS User Notifications",
+  "managed_by_project_terraform": false,
+  "configuration_name": "secure-aws-platform-security",
+  "new_customer_managed_keys": 0,
+  "new_sns_topics": 0,
+  "paid_plan_upgrade_performed": false,
+  "recipient_address_published": false,
+  "event_source": "aws.cloudwatch",
+  "event_type": "CloudWatch Alarm State Change",
+  "alarm_names": [
+    "secure-aws-platform-dev-events-pending",
+    "secure-aws-platform-dev-delivery-dlq-pending"
+  ],
+  "only_alarm_state": "ALARM",
+  "source_regions": [
+    "us-east-2"
+  ],
+  "aggregation": "NONE",
+  "email_contact_status": "inactive",
+  "email_delivery_tested": false,
+  "limitations": [
+    "Account-level routing is configured outside project Terraform",
+    "Email contact must be verified before delivery",
+    "Only new matching alarm events are routed; historical ALARM states are not replayed"
+  ],
+  "alarm_metadata_aligned": true,
+  "new_terraform_resources": 0,
+  "final_dev_plan_no_changes": true,
+  "metadata_verified_at_utc": "2026-10-26T19:38:36.329079+00:00",
+  "account_free_plan_verified_after_setup": true,
+  "event_rule_source_scope_verified": true,
+  "event_rule_active_in_deployment_region": true,
+  "hub_active_in_deployment_region": true,
+  "activation_request_accepted_by_aws": true
+}

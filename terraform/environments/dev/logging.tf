@@ -240,7 +240,7 @@ resource "aws_iam_role_policy" "cloudtrail" {
 }
 
 resource "aws_cloudtrail" "project" {
-  #checkov:skip=CKV_AWS_252:This milestone delivers security events to SQS with a delivery DLQ and visible queue alarms; external SNS notification awaits a chosen recipient.
+  #checkov:skip=CKV_AWS_252:Security events use SQS/DLQ and queue alarms; free account-level AWS User Notifications routes alarm events to email without a separate SNS topic.
   name                          = local.trail_name
   s3_bucket_name                = aws_s3_bucket.audit.id
   kms_key_id                    = aws_kms_key.audit.arn
