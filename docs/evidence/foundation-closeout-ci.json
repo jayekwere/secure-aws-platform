@@ -1,0 +1,44 @@
+{
+  "verified_at_utc": "2026-10-26T19:46:46.374831+00:00",
+  "source_revision": "5fda09e6533e4a45d926494e0d899ef33fa395d1",
+  "url": "https://github.com/jayekwere/secure-aws-platform/actions/runs/40389220930",
+  "run_id": 40389220930,
+  "conclusion": "success",
+  "jobs": [
+    {
+      "name": "Checkov IaC Security Scan",
+      "conclusion": "success"
+    },
+    {
+      "name": "TFLint (terraform/bootstrap)",
+      "conclusion": "success"
+    },
+    {
+      "name": "Terraform Format, Validation and Tests (bootstrap)",
+      "conclusion": "success"
+    },
+    {
+      "name": "Terraform Format, Validation and Tests (dev)",
+      "conclusion": "success"
+    },
+    {
+      "name": "TFLint (terraform/environments/dev)",
+      "conclusion": "success"
+    }
+  ],
+  "baseline_plan_runs": [
+    1,
+    5
+  ],
+  "rejected_deliberate_regressions": [
+    5,
+    13
+  ],
+  "aws_credentials_used": false,
+  "infrastructure_deployed_by_workflow": false,
+  "checkov_summary": {
+    "passed": 123,
+    "failed": 0,
+    "skipped": 9
+  }
+}

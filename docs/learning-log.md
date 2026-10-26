@@ -169,3 +169,5 @@ This completes the reviewed storage-policy milestone. Explicit workload IAM and 
 - Configured free account-level AWS User Notifications for only the two project queue alarms in the deployment region, without another customer-managed key or SNS topic. Email activation and receipt are separate verification steps, tracked in the evidence record.
 - Kept personal notification addresses and account-specific configuration private. The AWS account remained on its active Free plan after setup; no paid-plan upgrade was performed.
 - Updated two alarm descriptions to reflect the separate account-level routing and obtained a no-change development plan. No additional Terraform resources were created.
+
+The [closeout hosted run](https://github.com/jayekwere/secure-aws-platform/actions/runs/40389220930) passed all five jobs, six plan runs and 18 deliberate regressions for `5fda09e`.

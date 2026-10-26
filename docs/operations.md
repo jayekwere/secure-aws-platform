@@ -10,7 +10,7 @@ The deployed foundation has two independent Terraform roots and existing S3 stat
 
 ## Sign in from a fresh Mac or checkout
 
-Install AWS CLI v2 with `aws login`, Terraform 1.15.8 and Git. Clone the repository, then run commands from its root. No permanent access keys are needed.
+Install AWS CLI v2 with `aws login`, Terraform 1.15.8 and Git. Clone the repository, then run commands from its root. No permanent access keys are needed. The tested provider-lockfile platforms are Apple silicon (`darwin_arm64`) and Linux x86-64 (`linux_amd64`); prepare and review official provider checksums for another architecture without changing provider versions or bypassing lockfile checks. Use a fresh terminal or remove stale exported temporary AWS credentials before selecting the profile.
 
 ```sh
 aws configure set region us-east-2 --profile cloud-admin

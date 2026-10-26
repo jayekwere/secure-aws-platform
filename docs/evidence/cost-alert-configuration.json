@@ -15,5 +15,6 @@
     "Budget monitoring/notifications are free; usage and billing updates can be delayed",
     "This is an early-warning notification, not an enforced spending limit",
     "Recipient verification/email receipt still requires confirmation"
-  ]
+  ],
+  "scope": "All-account actual cost"
 }
