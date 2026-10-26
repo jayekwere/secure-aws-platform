@@ -2,7 +2,7 @@
 
 This document records what was built, what was learned, and what security decisions were made during the project.
 
-Entries describe work reported at the time, not a current inventory of deployed AWS resources. Raw AWS verification output is not retained here. See the [README](../README.md#verification-status) for current scope and the limits of the available evidence.
+Entries describe work reported at the time, not a current inventory of deployed AWS resources. Raw AWS verification output is not retained here. See the [README](../README.md#verification-results) for current scope and the limits of the available evidence.
 
 ## 2026-07-26 — Project Initialization
 
