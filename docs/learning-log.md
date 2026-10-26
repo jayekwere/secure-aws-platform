@@ -2,6 +2,8 @@
 
 This document records what was built, what was learned, and what security decisions were made during the project.
 
+Entries describe work reported at the time, not a current inventory of deployed AWS resources. Raw AWS verification output is not retained here. See the [README](../README.md#verification-status) for current scope and the limits of the available evidence.
+
 ## 2026-07-26 — Project Initialization
 
 ### Completed
@@ -15,7 +17,7 @@ This document records what was built, what was learned, and what security decisi
 - Installed AWS CLI version 2.
 - Confirmed Docker CLI installation.
 - Added the initial project README.
-- Added repository protections through `.gitignore`.
+- Added `.gitignore` rules for state, plans, and common credential files.
 
 ### Key Security Lesson
 
@@ -76,3 +78,33 @@ Add automated Terraform formatting, validation, linting, and security scanning t
 ### Security Lesson
 
 A successful scanner job does not necessarily mean zero findings when audit or soft-fail mode is enabled. Findings must be reviewed, prioritized, remediated, deferred with justification, or rejected as not applicable.
+
+## 2026-08-22 — Blocking Static Scan and KMS Policy Deferral
+
+### Completed
+
+- Changed Checkov from soft-fail to blocking mode for unsuppressed findings ([commit](https://github.com/jayekwere/secure-aws-platform/commit/fc7fc6d85331e7e90eed36ebddaffdbd7cd04616)).
+- Added a resource-scoped suppression for the missing explicit KMS key policy ([commit](https://github.com/jayekwere/secure-aws-platform/commit/cc556d9b410b403050a11812ffc19e1f97cea260)).
+- Documented that key authorization still relies on the AWS default policy and externally managed IAM.
+
+### Security Lesson
+
+A blocking scanner still permits explicitly suppressed findings. A documented deferral records a gap; it does not implement the missing control or establish an expiry process.
+
+## 2026-10-25 — Scope and Presentation Review
+
+### Completed
+
+- Reframed the README around the implemented S3/KMS development foundation.
+- Separated Terraform-defined controls, historical deployment reports, static validation results, and planned work.
+- Documented destructive lab defaults, external identity assumptions, missing policy boundaries, local state, and validation limits.
+- Added a read-only AWS verification procedure without claiming it was run against the account.
+- Prepared a local repository-description draft and project walkthrough.
+
+### Security Lesson
+
+Default encryption, static validation, and a historical no-change plan answer different questions. Authorization and detection claims need their own executable evidence. The October review did not establish the current AWS deployment state.
+
+### Next Milestone
+
+Implement and test the S3/KMS access boundary, then add protected state and one observable detection and restoration scenario. No Terraform, workflow, or GitHub settings were changed by this documentation update.

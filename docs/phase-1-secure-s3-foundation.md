@@ -1,88 +1,78 @@
-# Phase 1: Secure S3 Foundation
+# Phase 1: S3/KMS Foundation
 
+## Scope and evidence
 
-## Objective
+This phase defines a single-region S3 development lab with customer-managed KMS default encryption and automated static validation. The current Terraform root module is [terraform/environments/dev](../terraform/environments/dev).
 
-Deploy and verify a secure-by-default Amazon S3 bucket using Terraform.
+The [learning log](learning-log.md) records manual deployments and verification in July and August 2026. Those are historical reports: raw AWS CLI results and saved deployment plans are not committed. The October 25, 2026 review inspected source and CI and ran static Terraform checks; it did not inspect the AWS account. Current deployment and drift status remain unverified.
 
-## Resources Managed
+## Resources managed
 
-Terraform creates and manages:
+All nine resource blocks are in one root module; no reusable child modules exist yet.
 
-- A random identifier for global bucket-name uniqueness
-- An Amazon S3 bucket
-- S3 public-access-block settings
-- S3 object ownership controls
-- S3 versioning
-- S3 server-side encryption
+| Resource | Purpose | Source |
+| --- | --- | --- |
+| `random_id.bucket_suffix` | Random suffix to reduce bucket-name collisions | [main.tf](../terraform/environments/dev/main.tf) |
+| `aws_s3_bucket.secure_data` | Development data bucket | [main.tf](../terraform/environments/dev/main.tf) |
+| `aws_s3_bucket_public_access_block.secure_data` | Four bucket public-access-block settings | [main.tf](../terraform/environments/dev/main.tf) |
+| `aws_s3_bucket_ownership_controls.secure_data` | Bucket-owner-enforced ownership | [main.tf](../terraform/environments/dev/main.tf) |
+| `aws_s3_bucket_versioning.secure_data` | Object versioning | [main.tf](../terraform/environments/dev/main.tf) |
+| `aws_s3_bucket_server_side_encryption_configuration.secure_data` | Default SSE-KMS encryption and S3 Bucket Key | [main.tf](../terraform/environments/dev/main.tf) |
+| `aws_kms_key.secure_data` | Customer-managed encryption key | [kms.tf](../terraform/environments/dev/kms.tf) |
+| `aws_kms_alias.secure_data` | Environment-named key alias | [kms.tf](../terraform/environments/dev/kms.tf) |
+| `aws_s3_bucket_lifecycle_configuration.secure_data` | Multipart-upload cleanup and noncurrent-version expiration | [lifecycle.tf](../terraform/environments/dev/lifecycle.tf) |
 
-## Security Controls
+## Controls defined in code
 
-### Public Access Protection
+### Public access and ownership
 
-All four S3 public-access-block controls are enabled:
+All four bucket public-access-block settings are `true`: block public ACLs, ignore public ACLs, block public bucket policies, and restrict public buckets. Object ownership is `BucketOwnerEnforced`, disabling ACL-based access control.
 
-- Block public ACLs
-- Ignore public ACLs
-- Block public bucket policies
-- Restrict public buckets
+These settings address public exposure and ACL ownership. They do not define which authenticated IAM principals may read, write, or administer the bucket. No IAM or bucket policy is managed by this configuration.
 
-### Object Ownership
+### Encryption and key management
 
-The bucket uses:
+Default encryption uses `aws:kms` and the customer-managed key ARN. Automatic key rotation and the S3 Bucket Key are enabled.
 
-```text
-BucketOwnerEnforced
-```
+The default is not an exclusive-key enforcement policy. Upload encryption headers can override bucket defaults, and existing objects are not re-encrypted when defaults change. The historical SSE-S3-to-SSE-KMS update therefore does not prove that every existing object uses this key. See [AWS default-encryption behavior](https://docs.aws.amazon.com/AmazonS3/latest/userguide/default-bucket-encryption.html).
 
-This disables ACL-based access control and makes access policy-based.
+No explicit key policy is defined. AWS's default programmatic key policy permits the owning account to delegate permissions through IAM; it does not directly grant every IAM principal key access. Intended key administrators and users still need to be encoded and tested. See [AWS default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html).
 
-### Versioning
+There is no bucket-wide policy denying insecure transport. SSE-KMS object requests themselves require TLS, as described in [AWS SSE-KMS requirements](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html).
 
-Object versioning is enabled to improve recovery from accidental deletion or overwrite.
+### Versioning, lifecycle, and deletion
 
-Versioning is not a complete backup strategy, but it provides an additional recovery control.
+Versioning is enabled. The lifecycle configuration aborts incomplete multipart uploads after 7 days and expires noncurrent versions after 30 days.
 
-### Encryption
+The bucket uses `force_destroy = true`, allowing Terraform to remove contents and object versions during teardown. The KMS key has a 7-day deletion window. These settings suit disposable lab data; they do not establish immutable retention, a backup strategy, or production deletion protection.
 
-The bucket uses server-side encryption with a customer-managed AWS KMS key:
+### Input validation and resource identification
 
-```text
-aws:kms
-```
+The region input is restricted to `us-east-2`, `ca-central-1`, or `ca-west-1`, with `us-east-2` as the default. The environment input accepts `dev`, `test`, or `prod`, with `dev` as the default.
 
-Automatic KMS key rotation is enabled, and an S3 Bucket Key reduces repeated KMS requests for bucket operations.
+Only the development root module exists. Selecting `prod` changes names and tags without adding safeguards or account isolation. It does not make this a production-ready configuration.
 
-### Resource Identification
+Provider defaults tag AWS resources with project, environment, management method, and repository. The S3 bucket and KMS key also carry purpose and data-classification tags. The configuration does not define tag-based authorization policies.
 
-Terraform applies tags identifying:
+## Authentication assumptions
 
-- Project
-- Environment
-- Management method
-- Repository
-- Purpose
-- Data classification
+Earlier deployments are recorded as using IAM user authentication to assume `CloudAdministratorRole` and supply temporary STS credentials to Terraform.
 
-## Authentication Model
+That role and its trust and permission policies are not defined in this repository. The AWS provider uses externally supplied credentials; it does not configure role assumption or restrict the target account. GitHub OIDC and workload reader/writer roles remain planned.
 
-Terraform authenticates using temporary AWS credentials:
+No credentials are needed for the static CI jobs. They do not authenticate to AWS or deploy infrastructure.
 
-```text
-IAM user authentication
-        ↓
-CloudAdministratorRole
-        ↓
-AWS STS temporary session
-        ↓
-Terraform AWS provider
-```
+## Validation and historical deployment record
 
-No permanent AWS access keys are stored in the repository.
+The [recorded hosted run](https://github.com/jayekwere/secure-aws-platform/actions/runs/40050245606) for commit `f34d2dc` passed on October 23, 2026, Vancouver time:
 
-## Terraform Workflow
+- Terraform formatting, backend-disabled initialization, and validation passed.
+- TFLint 0.64.0 passed using the Terraform recommended ruleset.
+- Checkov 3.3.30 reported 18 passed, 0 failed, and 4 skipped checks.
 
-The deployment followed this workflow:
+Local formatting, backend-disabled initialization with `-lockfile=readonly`, and provider validation also passed during the October 25 review using Terraform 1.15.8. The [README](../README.md#run-the-static-checks) contains commands for repeating the static checks.
+
+The historical deployment notes record this sequence:
 
 ```text
 terraform init
@@ -94,65 +84,62 @@ terraform state list
 terraform plan
 ```
 
-The post-deployment plan returned:
+They report a post-deployment plan returning:
 
 ```text
 No changes. Your infrastructure matches the configuration.
 ```
 
-This demonstrates Terraform idempotency and confirms that no configuration drift was detected.
+That is a historical report of reconciliation at the time of the plan. It is not retained raw plan evidence, continuing drift monitoring, or proof that unauthorized operations are denied. There are no committed Terraform tests, deliberately insecure fixtures, or live authorization tests.
 
-## Independent AWS Verification
+## Read-only AWS verification
 
-The live controls were verified through AWS CLI commands for:
+For an existing lab, run from the repository root with its local state available and temporary credentials authorized for the read operations below. State supplies resource identifiers; the AWS queries inspect live settings. If the state or resources are absent, stop and establish the lab's status rather than treating missing output as a passing result.
 
-- Public-access blocking
-- Bucket versioning
-- Server-side encryption
-- Object ownership
+Confirm the returned account and role before querying resources:
 
-## State Management
+```sh
+aws sts get-caller-identity
 
-Terraform state is currently stored locally for this initial learning phase.
+LAB_BUCKET="$(terraform -chdir=terraform/environments/dev output -raw bucket_name)"
+LAB_KMS_KEY="$(terraform -chdir=terraform/environments/dev output -raw kms_key_arn)"
+LAB_REGION="$(terraform -chdir=terraform/environments/dev output -raw aws_region)"
 
-The following are excluded from Git:
-
-- Terraform state
-- Saved Terraform plans
-- Downloaded provider files
-
-A later phase will implement secure remote state with encryption, access controls, and locking.
-
-## Lab Trade-Off
-
-The bucket currently uses:
-
-```hcl
-force_destroy = true
+aws s3api get-public-access-block --bucket "$LAB_BUCKET" --region "$LAB_REGION"
+aws s3api get-bucket-ownership-controls --bucket "$LAB_BUCKET" --region "$LAB_REGION"
+aws s3api get-bucket-versioning --bucket "$LAB_BUCKET" --region "$LAB_REGION"
+aws s3api get-bucket-encryption --bucket "$LAB_BUCKET" --region "$LAB_REGION"
+aws s3api get-bucket-lifecycle-configuration --bucket "$LAB_BUCKET" --region "$LAB_REGION"
+aws kms describe-key --key-id "$LAB_KMS_KEY" --region "$LAB_REGION"
+aws kms get-key-rotation-status --key-id "$LAB_KMS_KEY" --region "$LAB_REGION"
+aws kms get-key-policy --key-id "$LAB_KMS_KEY" --policy-name default --region "$LAB_REGION"
 ```
 
-This is appropriate for a temporary learning environment because Terraform can delete the bucket even when it contains test objects or previous object versions.
+Compare public access, ownership, versioning, encryption, rotation, and lifecycle results with the settings above. Inspect the actual key policy separately because Terraform does not define one. These queries do not test whether specific principals can read or write objects, or whether existing objects use the intended key.
 
-A production data bucket would normally use stronger deletion protection and a documented retention strategy.
+The commands are a verification procedure, not a new result. Retain dated, sanitized output when repeating it; keep credentials, state, saved plans, and sensitive identifiers out of published evidence.
 
-## Lifecycle Management
+## State management
 
-The S3 lifecycle policy:
+State is local; no remote backend is configured. [Ignore rules](../.gitignore) exclude Terraform state, saved plans, and downloaded provider files from ordinary Git adds. They do not encrypt state, establish centralized access controls, or prevent a forced commit.
 
-- Aborts incomplete multipart uploads after 7 days
-- Deletes noncurrent object versions after 30 days
+A separately bootstrapped remote backend with encryption, scoped access, versioning, shared locking, and recovery verification is planned. No state migration was performed as part of the documentation review.
 
-This limits unnecessary storage accumulation while retaining a defined recovery window.
+## Checkov finding decisions
 
-## Checkov Finding Decisions
+The project history documents these six decisions. Four resource-scoped suppressions remain in the current source.
 
-The Checkov scans identified six findings:
+| Check | Decision | Current implementation or gap |
+| --- | --- | --- |
+| `CKV_AWS_145` | Remediated | Customer-managed KMS default encryption configured |
+| `CKV2_AWS_61` | Remediated | S3 lifecycle configuration added |
+| `CKV_AWS_18` | Deferred; suppressed | No S3 access logging; dedicated log destination planned |
+| `CKV2_AWS_62` | Deferred; suppressed | No EventBridge notifications; detection workflow planned |
+| `CKV_AWS_144` | Accepted for this lab; suppressed | No cross-region replication for temporary single-region development data |
+| `CKV2_AWS_64` | Deferred; suppressed | Explicit least-privilege KMS key policy absent |
 
-- `CKV_AWS_145`: Remediated with customer-managed KMS encryption
-- `CKV2_AWS_61`: Remediated with an S3 lifecycle configuration
-- `CKV_AWS_18`: Deferred until the centralized logging phase
-- `CKV2_AWS_62`: Deferred until the event-driven remediation phase
-- `CKV_AWS_144`: Accepted for the temporary single-region development lab
-- `CKV2_AWS_64`: Deferred until the IAM security layer, where an explicit least-privilege KMS key policy will be implemented
+The suppressions include phase-based reasons, but do not carry owners, expiry dates, or automated expiry checks. Blocking Checkov behavior does not make suppressed controls implemented.
 
-Deferred controls use resource-scoped Checkov suppressions with documented engineering justification.
+## Next milestone
+
+Define and test the S3/KMS access boundary, add reproducible negative-test evidence, and establish protected state before expanding deployment automation. Follow with one observable detection and restoration scenario. See the [prioritized roadmap](../README.md#prioritized-planned-work) for completion criteria.
