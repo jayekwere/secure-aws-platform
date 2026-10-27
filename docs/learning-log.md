@@ -4,7 +4,7 @@ This document records what was built, what was learned, and what security decisi
 
 Entries describe work reported at the time, not a current inventory of deployed AWS resources. Raw AWS verification output is not retained here. See the [README](../README.md#verification-results) for current scope and the limits of the available evidence.
 
-## 2026-07-26 — Project Initialization
+## 2026-07-26 - Project Initialization
 
 ### Completed
 
@@ -27,7 +27,7 @@ Credentials, Terraform state files, private keys, and environment files must not
 
 Prepare the Git repository workflow and secure the AWS account before deploying infrastructure.
 
-## 2026-07-26 — First Terraform AWS Deployment
+## 2026-07-26 - First Terraform AWS Deployment
 
 ### Completed
 
@@ -62,7 +62,7 @@ Writing a secure infrastructure definition is only one part of validation. Secur
 
 Add automated Terraform formatting, validation, linting, and security scanning through CI/CD.
 
-## 2026-08-02 — Checkov Findings Remediation
+## 2026-08-02 - Checkov Findings Remediation
 
 ### Completed
 
@@ -79,7 +79,7 @@ Add automated Terraform formatting, validation, linting, and security scanning t
 
 A successful scanner job does not necessarily mean zero findings when audit or soft-fail mode is enabled. Findings must be reviewed, prioritized, remediated, deferred with justification, or rejected as not applicable.
 
-## 2026-08-22 — Blocking Static Scan and KMS Policy Deferral
+## 2026-08-22 - Blocking Static Scan and KMS Policy Deferral
 
 ### Completed
 
@@ -91,7 +91,7 @@ A successful scanner job does not necessarily mean zero findings when audit or s
 
 A blocking scanner still permits explicitly suppressed findings. A documented deferral records a gap; it does not implement the missing control or establish an expiry process.
 
-## 2026-10-25 — Scope and Presentation Review
+## 2026-10-25 - Scope and Presentation Review
 
 ### Completed
 
@@ -109,7 +109,7 @@ Default encryption, static validation, and a historical no-change plan answer di
 
 Implement and test the S3/KMS access boundary, then add protected state and one observable detection and restoration scenario. No Terraform, workflow, or GitHub settings were changed by this documentation update.
 
-## 2026-10-25 — Local Storage Policy Milestone
+## 2026-10-25 - Local Storage Policy Milestone
 
 ### Implemented Locally, Pending Deployment
 
@@ -129,7 +129,7 @@ No AWS resources were changed. The original Terraform state is absent from this 
 
 Recover and reconcile the original state or prepare a reviewed import plan, then inspect a scoped update plan before deploying the policy and testing real allowed/denied requests.
 
-## 2026-10-26 — Applied Storage Guardrails and Live Verification
+## 2026-10-26 - Applied Storage Guardrails and Live Verification
 
 ### Completed
 
@@ -150,7 +150,7 @@ A nonexistent-key probe returned `KMS.NotFoundException` before policy authoriza
 This completes the reviewed storage-policy milestone. Explicit workload IAM and KMS key policies, centralized logging/detection, and remote state with recovery remain separate work. The current role is an administrator; these checks do not establish workload least privilege or account-wide security coverage.
 
 
-## 2026-10-26 — Deployed Access, Audit, Detection and Remote State
+## 2026-10-26 - Deployed Access, Audit, Detection and Remote State
 
 - Applied the authorized foundation and development plans: 52 resources created, the existing data key preserved and updated, no replacement/deletion. A missing alias-administration permission caused a partial bootstrap failure; a narrow key-administration repair completed it. Both roots now have negative regression tests for that omission.
 - Passed 56 live control/delivery checks, including role boundaries, direct-KMS denials, multipart operations, actual encrypted archive/CloudWatch delivery, a real event in SQS and an alarm reaching ALARM. Synthetic data versions were removed; security queue messages were retained.
@@ -161,7 +161,7 @@ This completes the reviewed storage-policy milestone. Explicit workload IAM and 
 - Hosted CI [passed all five jobs](https://github.com/jayekwere/secure-aws-platform/actions/runs/40346124360) for `bb56adf` after adding HashiCorp-verified Linux provider checksums; provider versions and resource configuration did not change. External paging, budget alerts, immutable workflow dependencies, required reviews and a full restoration exercise remain follow-up work. This is a scoped development lab.
 
 
-## 2026-10-26 — Foundation Handover and Free Alert Setup
+## 2026-10-26 - Foundation Handover and Free Alert Setup
 
 - Tested the exact backend-reconstruction snippet from a fresh temporary checkout. Both roots attached to existing state without migration and produced no-change AWS plans. The temporary checkout was removed.
 - Added an operations guide covering temporary authentication, private backend reconstruction, future increments, monitoring, recovery and teardown boundaries.
