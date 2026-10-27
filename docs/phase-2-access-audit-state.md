@@ -90,3 +90,7 @@ Review Terraform's migration prompt; do not force-copy over an existing remote s
 Bootstrap uses its **own** backend file/key. Migration allocated new remote lineage IDs and restarted serial numbering; exact resource inventories and outputs were preserved. Local pre-migration states remain private recovery archives. Use the current remote lineage for future operations, not the old local state. Operational verification compares both states and tests the real backend; see the [recorded outcomes](evidence/phase2-state-migration.json).
 
 Key-policy design follows AWS's [CloudTrail encryption guidance](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/create-kms-key-policy-for-cloudtrail.html), [CloudWatch encryption context guidance](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html), and [bounded EventBridge delivery permissions](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-use-resource-based.html).
+
+## October 27 notification closeout
+
+The existing email channel is now Active. A synthetic delivery-DLQ alarm event reached the notification center and the recipient confirmed its email. The alarm was restored to its original OK state. [Exact timestamps, bounded reproduction and limitations](notification-verification.md) supersede earlier pending-verification notes; the original October 26 evidence remains historical. The [pinned-workflow CI record](evidence/pinned-workflow-hosted.json) separately records all five passing jobs, six mocked plan runs and 18 rejected deliberate regressions.

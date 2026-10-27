@@ -6,7 +6,7 @@ A deployed Terraform AWS security lab demonstrating enforced S3/KMS access bound
 
 **Scope:** one AWS account and one development environment. Storage and detection resources are regional; CloudTrail collects management events across regions. This is an S3/KMS security foundation, with no application workloads, private network, containers or Kubernetes deployment.
 
-**Deployment, October 26, 2026:** the access, audit, detection and state foundation is applied. The existing data bucket and encryption key were preserved. Reader/writer authorization and real CloudTrail/EventBridge delivery have live evidence. See the [deployment record](docs/phase-2-access-audit-state.md), [live checks](docs/evidence/phase2-live-verification.json) and [state verification](docs/evidence/phase2-state-migration.json). [Latest hosted CI](https://github.com/jayekwere/secure-aws-platform/actions/runs/40389220930) passed all five jobs for `5fda09e`.
+**Deployment, October 26, 2026:** the access, audit, detection and state foundation is applied. The existing data bucket and encryption key were preserved. Reader/writer authorization and real CloudTrail/EventBridge delivery have live evidence. See the [deployment record](docs/phase-2-access-audit-state.md), [live checks](docs/evidence/phase2-live-verification.json) and [state verification](docs/evidence/phase2-state-migration.json). [Latest implementation CI](https://github.com/jayekwere/secure-aws-platform/actions/runs/40524553139) passed all five jobs for `2d1c9c9`.
 
 ## Architecture
 
@@ -28,7 +28,7 @@ flowchart LR
     Rules --> Queue["Encrypted SQS + delivery DLQ"]
     Queue --> Alarms["Visible queue alarms"]
     Alarms --> Notifications["Account-level User Notifications"]
-    Notifications --> Email["Email contact verification required"]
+    Notifications --> Email["Verified email delivery"]
     Data --> Access["Separate S3 access-log bucket"]
     State --> Access
     Archive --> Access
@@ -99,13 +99,13 @@ TFLint does not enable the AWS ruleset. Checkov fails on unsuppressed findings; 
 - **Encryption contract:** uploads must explicitly request SSE-KMS and a key identifier resolving to the data CMK. AWS accepts an alias resolving to that key. Existing objects are not automatically re-encrypted.
 - **Retention:** versioning and deletion guards are not immutable backups. Archives have no Object Lock, cross-account isolation or cross-region replication. A key administrator can still disable a key directly in AWS.
 - **Monitoring:** management writes and non-KMS management reads are recorded; KMS reads are excluded. Object-event logging is limited to data/state buckets. EventBridge detection runs in the deployment region. S3 access logging is configured; its best-effort object delivery was not verified in this milestone. Integrity validation is enabled, but a complete digest-chain validation exercise was not performed.
-- **Response:** SQS events and CloudWatch alarms require operator review. Separate account-level AWS User Notifications routing is configured for the two queue alarms; email-contact activation and receipt testing are tracked in the [notification record](docs/evidence/security-notification-configuration.json). There is no continuous consumer or automatic remediation.
+- **Response:** SQS events and CloudWatch alarms require operator review. Separate account-level AWS User Notifications routing is configured for the two queue alarms; the contact is Active and [one synthetic notification was received and confirmed](docs/notification-verification.md). There is no continuous consumer or automatic remediation.
 - **Cost:** customer-managed keys, CloudTrail data events, logs, storage, messaging and alarms consume credits or incur charges according to the account plan. A [free actual-cost warning above US$0.01](docs/evidence/cost-alert-configuration.json) was added to an existing account budget outside Terraform. It is not a spending cap. No paid-plan upgrade, paid budget report or automated budget action was configured.
 - **Assurance:** this is a development lab, not an account-wide security assessment. Required GitHub checks/reviews and enforced exception expiry remain absent; action dependencies are now pinned.
 
 ## Next steps
 
-1. Complete email-contact verification and demonstrate receipt of a synthetic security notification. Cost-alert configuration is verified separately; a charge was not generated to test it.
+1. Repeat the bounded notification receipt test after routing/contact changes. Email activation and the October 27 synthetic receipt test passed. Cost-alert configuration remains a separate check; a charge was not generated to test it.
 2. Review account-plan status and credit usage before leaving the lab running or expanding it. Keep recovery copies outside the account before any plan expiry or reviewed decommissioning.
 3. Workflow action pinning and retained plan-test artifacts are implemented. Configure branch checks/review and continue reviewing dated exceptions.
 4. Demonstrate a documented detection-to-restoration exercise and scheduled drift checking.
@@ -116,7 +116,7 @@ Private networking, reusable child modules, OIDC deployment, container/EKS/Kuber
 
 Use the [operations and handover guide](docs/operations.md) to reconnect a fresh checkout to the existing encrypted state, establish clean plans, and develop the next increment. It includes identity checks, reconstruction of private backend settings, monitoring responsibilities, and recovery/teardown boundaries. The [fresh-checkout verification](docs/evidence/foundation-resume-check.json) records the tested resume path.
 
-The deployed storage/access/audit/state foundation is the completed technical milestone. Free account-level email routing and a near-zero actual-cost warning are configured; email verification and receipt testing complete the operational handoff. Larger platform features are separate future milestones.
+The deployed storage/access/audit/state foundation is the completed technical milestone. Free account-level email routing and a near-zero actual-cost warning are configured; email verification and a recipient-confirmed synthetic receipt test now complete that notification handoff. Larger platform features are separate future milestones.
 
 ## Project notes
 
@@ -131,6 +131,6 @@ Use synthetic development data. Keep credentials, Terraform state and raw plans 
 
 ## October 27 workflow update
 
-Every workflow action now uses a full commit SHA. Plan-test jobs retain their source revision and complete regression output, including failures, for 14 days. Explicit Bash pipe handling preserves the test exit status when output is saved. Local `actionlint`, the immutable-reference/permissions check and `git diff --check` passed. The hosted pipeline repeats both roots' formatting, validation, native tests, deliberate regressions, TFLint and Checkov; its exact result will be recorded after completion.
+Every workflow action now uses a full commit SHA. Plan-test jobs retain their source revision and complete regression output, including failures, for 14 days. Explicit Bash pipe handling preserves the test exit status when output is saved. Local `actionlint`, the immutable-reference/permissions check and `git diff --check` passed. [Hosted run #40524553139](https://github.com/jayekwere/secure-aws-platform/actions/runs/40524553139) passed **all five jobs** for implementation commit `2d1c9c9`: **6 mocked plan runs, 18 rejected deliberate regressions, both TFLint roots clean, and Checkov 123 passed / 0 failed / 9 explicit exceptions**. Both retained plan-test artifacts were downloaded and their source revisions checked. [Exact source-bound record](docs/evidence/pinned-workflow-hosted.json).
 
-Email activation and actual notification receipt remain separate live checks. No new delivery result is claimed from a static workflow change.
+The separate [live notification check](docs/notification-verification.md) also passed: contact Active, a synthetic ALARM event observed at 15:00:36.476 UTC, matching email receipt confirmed by the recipient, and the original OK state restored at 15:01:48.818 UTC. No queue data or account permissions were changed by the test. This was one receipt check, not continuous delivery assurance.

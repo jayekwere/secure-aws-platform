@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUTC": "2026-10-27T15:09:55.325358+00:00",
+  "contactStatusObserved": "Active",
+  "notificationConfigurationStatusObserved": "Active",
+  "configurationName": "secure-aws-platform-security",
+  "recipientAddressPublished": false,
+  "test": {
+    "alarmName": "secure-aws-platform-dev-delivery-dlq-pending",
+    "region": "us-east-2",
+    "previousState": "OK",
+    "alarmActionsBefore": [],
+    "okActionsBefore": [],
+    "insufficientDataActionsBefore": [],
+    "syntheticAlarmAtUTC": "2026-10-27T15:00:36.476000+00:00",
+    "reason": "Synthetic notification delivery test 2026-10-27; no queue data changed",
+    "notificationCenterEventObserved": true,
+    "recipientConfirmedReceipt": true,
+    "recipientEvidence": "Direct confirmation and a matching received-email screenshot supplied by the recipient; screenshot and address are not published",
+    "restoredState": "OK",
+    "restoredAtUTC": "2026-10-27T15:01:48.818000+00:00",
+    "queueDataChangedByTest": false,
+    "permissionsChangedByAgent": false
+  },
+  "limits": [
+    "One synthetic alarm-state transition, not continuous delivery assurance",
+    "This verifies alarm-state routing and receipt, not metric evaluation or real queue backlog detection",
+    "Account-level routing is outside project Terraform",
+    "Email provider delivery and spam filtering can change",
+    "No message body, recipient address, account identifier or console credential is published"
+  ]
+}

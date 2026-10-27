@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "2d1c9c9325a0293b40badd10971ed4d9bd1c2222",
+  "runURL": "https://github.com/jayekwere/secure-aws-platform/actions/runs/40524553139",
+  "outcome": "passed",
+  "jobs": 5,
+  "mockedPlanRuns": 6,
+  "deliberateRegressionsRejected": 18,
+  "checkov": {
+    "version": "3.3.30",
+    "passed": 123,
+    "failed": 0,
+    "explicitSkips": 9
+  },
+  "tflint": {
+    "version": "0.64.0",
+    "rootsPassed": 2
+  },
+  "retainedArtifactSHA256": {
+    "terraform-bootstrap-40524553139/source-commit.txt": "aea310b259a4f7660b0ef8a8c1d8e72599f85c28f6e9d0142770d3fe62139523",
+    "terraform-bootstrap-40524553139/terraform-bootstrap.txt": "8dc23f828a3af526cfad201ba04d83ef1c82ede846977fefa5c3141a54fd18a6",
+    "terraform-dev-40524553139/source-commit.txt": "aea310b259a4f7660b0ef8a8c1d8e72599f85c28f6e9d0142770d3fe62139523",
+    "terraform-dev-40524553139/terraform-dev.txt": "7ada7b27b642f2d34bae3a2a04aea66a8b12b65077174b2ec7abf49e10e7adf9"
+  },
+  "workflowSHA256": "8ac324c1d64e66a5cfa655c948cea791a644d79e4b85a9907edd66caaf71adfa",
+  "liveCloudAccessByCI": false,
+  "notificationReceiptVerifiedByThisRun": false
+}

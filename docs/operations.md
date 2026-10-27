@@ -108,3 +108,7 @@ These settings are separate from Terraform and should be checked after changing 
 3. Associate the operator's email contact and complete its verification. Inspect event-rule regional status and channel association. Use the [AWS example filter](https://docs.aws.amazon.com/notifications/latest/userguide/common-usecases.html) when reconstructing the rule.
 4. Add an actual-cost `GREATER_THAN` notification with an `ABSOLUTE_VALUE` threshold of US$0.01 to the existing project cost budget and the operator-approved recipient. Preserve other notifications. Monitoring and email alerts are free; budget reports and some automated actions have separate pricing.
 5. Verify security notification receipt using a clearly labeled synthetic alarm test only when no real delivery failure is present. Restore normal metric evaluation and retain evidence. Do not create a charge just to test the budget warning.
+
+## October 27 notification closeout
+
+The existing email channel is now Active. A synthetic delivery-DLQ alarm event reached the notification center and the recipient confirmed its email. The alarm was restored to its original OK state. [Exact timestamps, bounded reproduction and limitations](notification-verification.md) supersede earlier pending-verification notes; the original October 26 evidence remains historical. The [pinned-workflow CI record](evidence/pinned-workflow-hosted.json) separately records all five passing jobs, six mocked plan runs and 18 rejected deliberate regressions.
