@@ -91,7 +91,7 @@ tflint --chdir=terraform/bootstrap --config="$PWD/.tflint.hcl" --format=compact
 checkov -d terraform --framework terraform
 ```
 
-TFLint does not enable the AWS ruleset. Checkov fails on unsuppressed findings; [all nine exceptions](docs/phase-2-access-audit-state.md#scanner-exceptions) are documented. The workflow uses mutable action tags and does not upload evidence artifacts.
+TFLint does not enable the AWS ruleset. Checkov fails on unsuppressed findings; [all nine exceptions](docs/phase-2-access-audit-state.md#scanner-exceptions) are documented. The workflow now pins every action to a commit SHA and retains source-bound plan-test output for 14 days. A static check rejects mutable action references and deployment/repository-write permissions.
 
 ## Operations and boundaries
 
@@ -101,13 +101,13 @@ TFLint does not enable the AWS ruleset. Checkov fails on unsuppressed findings; 
 - **Monitoring:** management writes and non-KMS management reads are recorded; KMS reads are excluded. Object-event logging is limited to data/state buckets. EventBridge detection runs in the deployment region. S3 access logging is configured; its best-effort object delivery was not verified in this milestone. Integrity validation is enabled, but a complete digest-chain validation exercise was not performed.
 - **Response:** SQS events and CloudWatch alarms require operator review. Separate account-level AWS User Notifications routing is configured for the two queue alarms; email-contact activation and receipt testing are tracked in the [notification record](docs/evidence/security-notification-configuration.json). There is no continuous consumer or automatic remediation.
 - **Cost:** customer-managed keys, CloudTrail data events, logs, storage, messaging and alarms consume credits or incur charges according to the account plan. A [free actual-cost warning above US$0.01](docs/evidence/cost-alert-configuration.json) was added to an existing account budget outside Terraform. It is not a spending cap. No paid-plan upgrade, paid budget report or automated budget action was configured.
-- **Assurance:** this is a development lab, not an account-wide security assessment. Required GitHub checks/reviews, immutable action dependencies and enforced exception expiry remain absent.
+- **Assurance:** this is a development lab, not an account-wide security assessment. Required GitHub checks/reviews and enforced exception expiry remain absent; action dependencies are now pinned.
 
 ## Next steps
 
 1. Complete email-contact verification and demonstrate receipt of a synthetic security notification. Cost-alert configuration is verified separately; a charge was not generated to test it.
 2. Review account-plan status and credit usage before leaving the lab running or expanding it. Keep recovery copies outside the account before any plan expiry or reviewed decommissioning.
-3. Pin workflow dependencies, enforce checks/review and retain source-bound CI artifacts.
+3. Workflow action pinning and retained plan-test artifacts are implemented. Configure branch checks/review and continue reviewing dated exceptions.
 4. Demonstrate a documented detection-to-restoration exercise and scheduled drift checking.
 
 Private networking, reusable child modules, OIDC deployment, container/EKS/Kubernetes controls and application workloads remain future work outside this storage-security milestone.
@@ -128,3 +128,9 @@ The deployed storage/access/audit/state foundation is the completed technical mi
 - [Presentation and proposed About description](docs/project-presentation.md)
 
 Use synthetic development data. Keep credentials, Terraform state and raw plans out of source control.
+
+## October 27 workflow update
+
+Every workflow action now uses a full commit SHA. Plan-test jobs retain their source revision and complete regression output, including failures, for 14 days. Explicit Bash pipe handling preserves the test exit status when output is saved. Local `actionlint`, the immutable-reference/permissions check and `git diff --check` passed. The hosted pipeline repeats both roots' formatting, validation, native tests, deliberate regressions, TFLint and Checkov; its exact result will be recorded after completion.
+
+Email activation and actual notification receipt remain separate live checks. No new delivery result is claimed from a static workflow change.
